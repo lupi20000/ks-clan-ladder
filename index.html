@@ -115,12 +115,12 @@ input::placeholder{color:var(--ink-3)}
 /* ── 표 ── */
 .tablewrap{
   background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
-  overflow-x:auto;box-shadow:var(--shadow);
+  overflow:clip;box-shadow:var(--shadow);
 }
-table{border-collapse:collapse;width:100%;min-width:640px}
+table{border-collapse:collapse;width:100%}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line-soft)}
 thead th{
-  position:sticky;top:0;background:var(--panel-2);
+  position:sticky;top:var(--barh,52px);z-index:4;background:var(--panel-2);
   font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
   letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
   border-bottom:1px solid var(--line);white-space:nowrap;
@@ -138,14 +138,17 @@ tbody tr:hover{background:var(--accent-soft)}
 }
 tr.top .rk{color:var(--accent);font-weight:600;font-size:15px}
 
-.toon{display:flex;flex-direction:column;gap:1px}
-.toon a{
+.toon{display:flex;flex-direction:column;gap:1px;align-items:flex-start}
+.toon .nm{
   font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;font-size:15px;
-  color:var(--ink);text-decoration:none;border-bottom:1px solid transparent;
+  color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left;
 }
-.toon a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.toon .nm:hover{color:var(--accent)}
+.toon .nm::after{content:"be";font-size:10px;color:var(--ink-3);margin-left:5px}
+tr.open .nm{color:var(--accent)}
+tr.open .nm::after{content:"b4"}
 .toon .bt{font-size:12px;color:var(--ink-3)}
-.toon .mobi{display:none}
+.toon .line2{display:none}
 
 .tier{
   display:inline-block;font-family:"Chakra Petch",sans-serif;font-weight:600;
@@ -164,6 +167,40 @@ tr.top .rk{color:var(--accent);font-weight:600;font-size:15px}
 .wl .fill{height:100%;background:var(--good)}
 .wl .fill.lo{background:var(--bad)}
 .empty{padding:40px 16px;text-align:center;color:var(--ink-3)}
+
+/* ── 계정을 누르면 펼쳐지는 칸 ── */
+tr.det td{background:var(--panel-2);padding:14px 16px}
+tr.det:hover td{background:var(--panel-2)}
+.det-in{display:flex;flex-wrap:wrap;gap:10px 28px}
+.box{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.box h3{
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0;
+}
+.mu{display:flex;align-items:center;gap:8px;font-size:12px}
+.mu .k{font-family:"IBM Plex Mono",monospace;font-weight:600;width:36px;flex:none}
+.mu .track{flex:1 1 auto;height:5px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+.mu .fill{height:100%;background:var(--good)}
+.mu .fill.lo{background:var(--bad)}
+.mu .n{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--ink-2);white-space:nowrap;flex:none;
+}
+.g{display:flex;align-items:center;gap:8px;font-size:12px}
+.g .r{
+  flex:none;width:17px;height:17px;border-radius:2px;background:var(--good);color:#fff;
+  font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:10px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.g .r.l{background:var(--bad)}
+.g .vs{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);flex:none;width:34px}
+.g .op{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.g .d{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--good);flex:none;
+}
+.g .d.m{color:var(--bad)}
+.none{font-size:12px;color:var(--ink-3)}
 
 /* ── 아이디 추가 ── */
 .add{
@@ -202,19 +239,32 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
 
 /* ── 휴대폰 ── */
 @media (max-width:640px){
-  .wrap{padding:20px 12px 44px;gap:14px}
-  table{min-width:0}
-  th,td{padding:9px 8px}
+  .wrap{padding:18px 10px 40px;gap:12px}
+  body{font-size:14px}
+  th,td{padding:8px 6px}
   .col-race,.col-wl{display:none}
-  .toon{display:block}
-  .toon .bt,.toon .mobi{display:inline;font-size:12px;color:var(--ink-3)}
-  .toon .bt::before{content:" · "}
-  .toon a{font-size:14px}
+
+  /* 칸 너비를 못박아 두어야 계정 밑줄이 한 줄로 잘린다 */
+  table{table-layout:fixed;width:100%}
+  .rk{width:30px;padding-right:3px;font-size:12px}
+  th:nth-child(3){width:58px}
+  th:nth-child(5){width:70px}
+
+  .toon{display:block;max-width:100%}
+  .toon .nm{font-size:13px}
+  .toon .bt{display:none}
+  .toon .line2{
+    display:block;width:100%;font-size:11px;color:var(--ink-3);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
   .standing{display:none}
-  .rk{width:34px;padding-right:4px}
-  .mmr{font-size:15px}
-  .tier{font-size:10px;padding:2px 6px}
-  .bar{padding:10px}
+  .mmr{font-size:14px}
+  .tier{font-size:9px;padding:2px 5px;letter-spacing:.03em}
+  .bar{padding:9px}
+  thead th{font-size:10px;letter-spacing:.04em}
+  tr.det td{padding:12px 10px}
+  .det-in{gap:14px}
+  .g,.mu{font-size:11px}
 }
 </style>
 
@@ -225,6 +275,25 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     <h1>ks clan 래더 순위</h1>
     <p class="sub" id="m-updated"></p>
   </header>
+
+  <section class="add">
+    <h2>래더 아이디 등록요청</h2>
+    <p class="hint">순위에 안 보이는 클랜원은 여기에 적고 <b>등록요청</b> 을 누르세요.
+      계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
+      <b>반영은 매일 자정</b>에 한 번 이뤄집니다.</p>
+    <div class="addrow">
+      <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
+      <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
+      <select id="a-tier"></select>
+      <button id="a-btn">등록요청</button>
+    </div>
+    <div class="pending" id="a-list"></div>
+    <div class="addfoot">
+      <button class="ghost" id="a-copy">전체 복사</button>
+      <button class="ghost" id="a-clear">비우기</button>
+      <span class="toast" id="a-toast"></span>
+    </div>
+  </section>
 
   <div class="bar">
     <input type="search" id="q" placeholder="계정 · 배틀태그 검색" autocomplete="off">
@@ -244,7 +313,7 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
         <tr>
           <th class="rk">#</th>
           <th class="s" data-k="toon">계정</th>
-          <th class="s" data-k="tier">티어</th>
+          <th class="s" data-k="tier">클랜티어</th>
           <th class="s col-race" data-k="cwalRace">종족</th>
           <th class="s on" data-k="rating">MMR</th>
           <th class="s col-wl" data-k="winrate">승패</th>
@@ -254,26 +323,10 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     </table>
   </div>
 
-  <section class="add">
-    <h2>래더 아이디 추가</h2>
-    <p class="hint">순위에 안 보이는 클랜원이 있으면 여기에 적어두세요. 다음 갱신 때 반영합니다.</p>
-    <div class="addrow">
-      <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
-      <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
-      <button id="a-btn">추가</button>
-    </div>
-    <div class="pending" id="a-list"></div>
-    <div class="addfoot">
-      <button class="ghost" id="a-copy">전체 복사</button>
-      <button class="ghost" id="a-clear">비우기</button>
-      <span class="toast" id="a-toast"></span>
-    </div>
-  </section>
-
   <footer>cwal.gg 공개 데이터</footer>
 </div>
 
-<script>window.KS_DATA = {"updated":"2026-09-02 16:43","rows":[{"tier":"","toon":"Doong1[kS]","gateway":30,"rating":2353,"standing":181,"cwalRace":"T","wins":16,"losses":7,"battleTag":"미친마법사"},{"tier":"Gold","toon":"ChogOsu[kS].","gateway":30,"rating":2345,"standing":190,"cwalRace":"Z","wins":31,"losses":19,"battleTag":"ChogOsu"},{"tier":"Gold","toon":"Lanma[kS]","gateway":30,"rating":2305,"standing":267,"cwalRace":"T","wins":21,"losses":9,"battleTag":"미친마법사"},{"tier":"Gold","toon":"Queen[KS]","gateway":30,"rating":2256,"standing":null,"cwalRace":"Z","wins":7,"losses":4,"battleTag":"jjabqueen"},{"tier":"Yellow","toon":"Siege[kS]","gateway":30,"rating":2244,"standing":478,"cwalRace":"T","wins":66,"losses":38,"battleTag":"잇팁"},{"tier":"Yellow","toon":"Maple[kS]","gateway":30,"rating":2228,"standing":574,"cwalRace":"Z","wins":38,"losses":15,"battleTag":"꼬마자객"},{"tier":"Gold","toon":"Machine[kS]","gateway":30,"rating":2221,"standing":617,"cwalRace":"T","wins":7,"losses":0,"battleTag":"scv"},{"tier":"미배정","toon":"Jerry[kS]","gateway":30,"rating":2215,"standing":652,"cwalRace":"Z","wins":5,"losses":0,"battleTag":"제리"},{"tier":"Gold","toon":"qufgh[kS]","gateway":30,"rating":2211,"standing":681,"cwalRace":"T","wins":91,"losses":56,"battleTag":"정별호"},{"tier":"Yellow","toon":"By[kS]","gateway":30,"rating":2208,"standing":704,"cwalRace":"P","wins":7,"losses":2,"battleTag":"송정우"},{"tier":"Gold","toon":"sB[kS]","gateway":30,"rating":2203,"standing":751,"cwalRace":"T","wins":40,"losses":14,"battleTag":"MoKa"},{"tier":"Yellow","toon":"J.R[kS]","gateway":30,"rating":2197,"standing":797,"cwalRace":"T","wins":45,"losses":23,"battleTag":"저스틴리버"},{"tier":"Yellow","toon":"knic[kS]","gateway":30,"rating":2185,"standing":863,"cwalRace":"Z","wins":12,"losses":5,"battleTag":"강수현"},{"tier":"","toon":"bigbear3[kS]","gateway":10,"rating":2173,"standing":960,"cwalRace":"Z","wins":10,"losses":4,"battleTag":"떡보제국"},{"tier":"Violet","toon":"SCV","gateway":30,"rating":2161,"standing":1087,"cwalRace":"T","wins":9,"losses":0,"battleTag":"lIIlIIlIIIlI"},{"tier":"Yellow","toon":"man12[kS]","gateway":30,"rating":2155,"standing":1129,"cwalRace":"T","wins":24,"losses":16,"battleTag":"거대한루비전차"},{"tier":"Gold","toon":"Cloud[kS]","gateway":30,"rating":2150,"standing":null,"cwalRace":"P","wins":9,"losses":5,"battleTag":"Cloud"},{"tier":"Gold","toon":"rmfmrm[kS]","gateway":30,"rating":2130,"standing":null,"cwalRace":"Z","wins":5,"losses":1,"battleTag":"깔끔한잿빛코도"},{"tier":"Yellow","toon":"Poker[kS]","gateway":30,"rating":2120,"standing":1530,"cwalRace":"P","wins":5,"losses":2,"battleTag":"기운찬곰"},{"tier":"Violet","toon":"SOVAVA[kS]","gateway":30,"rating":2120,"standing":1532,"cwalRace":"Z","wins":69,"losses":47,"battleTag":"엄청난마법사"},{"tier":"Red","toon":"2525[kS]","gateway":30,"rating":2119,"standing":1536,"cwalRace":"Z","wins":87,"losses":68,"battleTag":"퀸옐로우"},{"tier":"Violet","toon":"HyunVOice[kS]","gateway":30,"rating":2118,"standing":1563,"cwalRace":"Z","wins":152,"losses":117,"battleTag":"현보이스"},{"tier":"Red","toon":"Comodo[kS]","gateway":30,"rating":2117,"standing":1575,"cwalRace":"P","wins":4,"losses":1,"battleTag":"Comodo"},{"tier":"Violet","toon":"rOdeO[KaL]","gateway":30,"rating":2107,"standing":1718,"cwalRace":"Z","wins":5,"losses":0,"battleTag":"rOdeO"},{"tier":"Yellow","toon":"JM[kS]","gateway":30,"rating":2098,"standing":1841,"cwalRace":"T","wins":125,"losses":92,"battleTag":"정민이"},{"tier":"Yellow","toon":"MiNi[kS]","gateway":30,"rating":2092,"standing":1939,"cwalRace":"P","wins":8,"losses":5,"battleTag":"내이름은갓조"},{"tier":"Yellow","toon":"Karu[ks]","gateway":30,"rating":2090,"standing":1953,"cwalRace":"P","wins":10,"losses":5,"battleTag":"나무"},{"tier":"Black","toon":"ivOry[kS]","gateway":30,"rating":2088,"standing":1974,"cwalRace":"Z","wins":18,"losses":11,"battleTag":"인치호"},{"tier":"Yellow","toon":"TrasH[kS]","gateway":30,"rating":2088,"standing":1980,"cwalRace":"P","wins":11,"losses":6,"battleTag":"Barcelona"},{"tier":"Gold","toon":"Ranma[kS]","gateway":30,"rating":2083,"standing":2037,"cwalRace":"T","wins":26,"losses":14,"battleTag":"찍찍"},{"tier":"Blue","toon":"Forward[kS]","gateway":10,"rating":2082,"standing":2041,"cwalRace":"T","wins":4,"losses":1,"battleTag":"CraDius"},{"tier":"Yellow","toon":"bushdog[ks]","gateway":30,"rating":2064,"standing":2308,"cwalRace":"Z","wins":17,"losses":10,"battleTag":"그림자용"},{"tier":"Gold","toon":"DivinE[kS]","gateway":30,"rating":2055,"standing":2449,"cwalRace":"P","wins":28,"losses":20,"battleTag":"Bisu"},{"tier":"Red","toon":"siki[ks]","gateway":30,"rating":2053,"standing":2486,"cwalRace":"P","wins":20,"losses":6,"battleTag":"Absolute"},{"tier":"Violet","toon":"Runner[kS]","gateway":30,"rating":2047,"standing":2604,"cwalRace":"P","wins":22,"losses":8,"battleTag":"Subin"},{"tier":"Violet","toon":"elyuel","gateway":30,"rating":2046,"standing":2616,"cwalRace":"P","wins":12,"losses":4,"battleTag":"에류엘"},{"tier":"Sky","toon":"Code","gateway":30,"rating":2042,"standing":2738,"cwalRace":"P","wins":66,"losses":51,"battleTag":"박하사탕"},{"tier":"Violet","toon":"Jun[kS]","gateway":30,"rating":2038,"standing":2866,"cwalRace":"T","wins":63,"losses":48,"battleTag":"짭재호"},{"tier":"Violet","toon":"9oodbye[kS]","gateway":30,"rating":2032,"standing":3054,"cwalRace":"T","wins":11,"losses":3,"battleTag":"밤수킹"},{"tier":"Blue","toon":"ickle[kS]","gateway":30,"rating":2031,"standing":3098,"cwalRace":"Z","wins":34,"losses":22,"battleTag":"수정홀"},{"tier":"Violet","toon":"gray[ks]","gateway":30,"rating":1999,"standing":3607,"cwalRace":"T","wins":10,"losses":4,"battleTag":"사가"},{"tier":"Violet","toon":"Stardust[kS]","gateway":30,"rating":1998,"standing":3629,"cwalRace":"P","wins":22,"losses":16,"battleTag":"뱃살만효도르"},{"tier":"Yellow","toon":"Notable[kS]","gateway":30,"rating":1994,"standing":3681,"cwalRace":"Z","wins":25,"losses":19,"battleTag":"Koreanair"},{"tier":"Red","toon":"Insanity[kS]","gateway":30,"rating":1975,"standing":3939,"cwalRace":"P","wins":31,"losses":22,"battleTag":"sinhus"},{"tier":"Violet","toon":"AngSangGuk[kS]","gateway":30,"rating":1970,"standing":4006,"cwalRace":"P","wins":3,"losses":3,"battleTag":"상국"},{"tier":"Red","toon":"SungA[kS]","gateway":30,"rating":1962,"standing":4152,"cwalRace":"Z","wins":6,"losses":1,"battleTag":"성아"},{"tier":"Gold","toon":"haO[kS]","gateway":30,"rating":1961,"standing":4165,"cwalRace":"Z","wins":7,"losses":6,"battleTag":"OPSS"},{"tier":"Red","toon":"HanSoL[kS]","gateway":30,"rating":1960,"standing":4180,"cwalRace":"Z","wins":9,"losses":5,"battleTag":"무럭"},{"tier":"Violet","toon":"Berry[KS]","gateway":30,"rating":1956,"standing":4239,"cwalRace":"Z","wins":13,"losses":7,"battleTag":"베리"},{"tier":"Red","toon":"gom[kS]","gateway":30,"rating":1951,"standing":4335,"cwalRace":"P","wins":4,"losses":2,"battleTag":"곰곰곰"},{"tier":"Red","toon":"Coni[ks]","gateway":30,"rating":1948,"standing":4387,"cwalRace":"Z","wins":27,"losses":22,"battleTag":"suksamo86"},{"tier":"Violet","toon":"Soul_Nope","gateway":30,"rating":1940,"standing":4533,"cwalRace":"Z","wins":7,"losses":3,"battleTag":"다이아퍼"},{"tier":"Red","toon":"Easygoing[ks]","gateway":30,"rating":1936,"standing":4593,"cwalRace":"Z","wins":4,"losses":4,"battleTag":"정석"},{"tier":"Red","toon":"Arch[kS]","gateway":30,"rating":1935,"standing":4609,"cwalRace":"T","wins":20,"losses":17,"battleTag":"뭐가뭔지"},{"tier":"Violet","toon":"Elephant[kS]","gateway":30,"rating":1932,"standing":4680,"cwalRace":"T","wins":12,"losses":2,"battleTag":"lIlIlIlllllI"},{"tier":"Violet","toon":"Flak88[kS]","gateway":30,"rating":1929,"standing":4744,"cwalRace":"T","wins":22,"losses":17,"battleTag":"메딕"},{"tier":"Violet","toon":"Calm[kS]","gateway":30,"rating":1923,"standing":4852,"cwalRace":"Z","wins":15,"losses":9,"battleTag":"용땅"},{"tier":"Violet","toon":"SoUL[kS]","gateway":30,"rating":1920,"standing":4920,"cwalRace":"T","wins":53,"losses":30,"battleTag":"SoUL"},{"tier":"Blue","toon":"5Drone[kS]","gateway":30,"rating":1903,"standing":5270,"cwalRace":"Z","wins":49,"losses":33,"battleTag":"아나"},{"tier":"Red","toon":"Stone[kS]","gateway":30,"rating":1898,"standing":5406,"cwalRace":"T","wins":100,"losses":92,"battleTag":"kima"},{"tier":"Violet","toon":"xkshtm[kS]","gateway":30,"rating":1896,"standing":5457,"cwalRace":"P","wins":40,"losses":25,"battleTag":"Safety"},{"tier":"Blue","toon":"Gun23[KaL]","gateway":45,"rating":1887,"standing":5643,"cwalRace":"Z","wins":26,"losses":22,"battleTag":"백대건"},{"tier":"Violet","toon":"d0ng[kS]","gateway":30,"rating":1877,"standing":5867,"cwalRace":"P","wins":66,"losses":56,"battleTag":"동칼동칼"},{"tier":"Red","toon":"OneTo[kS]","gateway":30,"rating":1876,"standing":null,"cwalRace":"T","wins":22,"losses":20,"battleTag":"운좋은호랑이"},{"tier":"Violet","toon":"GGPlay[kS]","gateway":30,"rating":1871,"standing":6002,"cwalRace":"Z","wins":5,"losses":4,"battleTag":"꾀돌이"},{"tier":"Blue","toon":"ddakddak2[ks]","gateway":30,"rating":1866,"standing":6094,"cwalRace":"P","wins":60,"losses":46,"battleTag":"강창모"},{"tier":"Red","toon":"Teo[kS]","gateway":30,"rating":1842,"standing":6696,"cwalRace":"T","wins":18,"losses":10,"battleTag":"쩡태오"},{"tier":"Violet","toon":"Axe[kS]","gateway":30,"rating":1833,"standing":6925,"cwalRace":"T","wins":3,"losses":3,"battleTag":"졸린곰"},{"tier":"","toon":"dOn9[kS]","gateway":30,"rating":1833,"standing":6928,"cwalRace":"T","wins":7,"losses":5,"battleTag":"최지호"},{"tier":"Blue","toon":"KATANA[kS]","gateway":30,"rating":1817,"standing":7376,"cwalRace":"P","wins":182,"losses":185,"battleTag":"번듯한오크"},{"tier":"Sky","toon":"Fleta[kS]","gateway":30,"rating":1815,"standing":7424,"cwalRace":"P","wins":5,"losses":0,"battleTag":"플레타타"},{"tier":"Blue","toon":"Its[kS]","gateway":30,"rating":1808,"standing":7635,"cwalRace":"P","wins":5,"losses":4,"battleTag":"이츠"},{"tier":"Violet","toon":"9008[KS]","gateway":30,"rating":1798,"standing":7927,"cwalRace":"P","wins":6,"losses":1,"battleTag":"Shuttle"},{"tier":"Red","toon":"Cliff[kS]","gateway":30,"rating":1790,"standing":8132,"cwalRace":"Z","wins":5,"losses":6,"battleTag":"에반정"},{"tier":"","toon":"Deviloo[KS]","gateway":30,"rating":1790,"standing":8134,"cwalRace":"T","wins":75,"losses":69,"battleTag":"Deviloo"},{"tier":"Gold","toon":"Withoutwax","gateway":30,"rating":1788,"standing":8199,"cwalRace":"T","wins":12,"losses":9,"battleTag":"BeBe"},{"tier":"Sky","toon":"BBBuuuUU[kS]","gateway":30,"rating":1781,"standing":8393,"cwalRace":"Z","wins":17,"losses":12,"battleTag":"Scouterpa"},{"tier":"Blue","toon":"Hades[ks]","gateway":30,"rating":1766,"standing":8883,"cwalRace":"P","wins":29,"losses":23,"battleTag":"asd13"},{"tier":"","toon":"BisuSnow[kS]","gateway":30,"rating":1762,"standing":9025,"cwalRace":"P","wins":9,"losses":4,"battleTag":"BisuSnow"},{"tier":"","toon":"zzangGu[kS]","gateway":30,"rating":1754,"standing":9340,"cwalRace":"P","wins":4,"losses":1,"battleTag":"박장호"},{"tier":"Violet","toon":"BANDI[kS]","gateway":30,"rating":1741,"standing":9894,"cwalRace":"Z","wins":15,"losses":11,"battleTag":"광포한까마귀"},{"tier":"Blue","toon":"lIllIllIIlIII","gateway":10,"rating":1741,"standing":9881,"cwalRace":"P","wins":50,"losses":42,"battleTag":"결한"},{"tier":"미배정","toon":"JukCheon[kS]","gateway":30,"rating":1733,"standing":10074,"cwalRace":"P","wins":3,"losses":2,"battleTag":"죽천로"},{"tier":"Sky","toon":"KanCho[kS]","gateway":30,"rating":1730,"standing":10136,"cwalRace":"Z","wins":71,"losses":68,"battleTag":"KanCho"},{"tier":"Sky","toon":"Electric[kS]","gateway":30,"rating":1725,"standing":10276,"cwalRace":"T","wins":3,"losses":3,"battleTag":"각성한전기쥐"},{"tier":"Sky","toon":"LIVRE[kS]","gateway":30,"rating":1702,"standing":10944,"cwalRace":"Z","wins":4,"losses":1,"battleTag":"까꿍이"},{"tier":"Red","toon":"Tiki[kS)","gateway":10,"rating":1694,"standing":11157,"cwalRace":"Z","wins":2,"losses":3,"battleTag":"MoKa"},{"tier":"Blue","toon":"SSS[kS]","gateway":30,"rating":1688,"standing":11350,"cwalRace":"T","wins":29,"losses":29,"battleTag":"서참취"},{"tier":"Gold","toon":"Animal[kS]","gateway":30,"rating":1687,"standing":null,"cwalRace":"T","wins":2,"losses":3,"battleTag":"갓콩"},{"tier":"Blue","toon":"neco[kS]","gateway":30,"rating":1686,"standing":11407,"cwalRace":"T","wins":38,"losses":43,"battleTag":"neco"},{"tier":"Violet","toon":"Palmer[kS]","gateway":30,"rating":1604,"standing":14065,"cwalRace":"Z","wins":27,"losses":35,"battleTag":"sAviOr"},{"tier":"Sky","toon":"exlar[ks]","gateway":30,"rating":1603,"standing":14091,"cwalRace":"T","wins":31,"losses":26,"battleTag":"고약한수도사"},{"tier":"","toon":"YouSin[kS]","gateway":30,"rating":1602,"standing":14133,"cwalRace":"P","wins":134,"losses":123,"battleTag":"섹시한늑대"},{"tier":"Blue","toon":"DdangCheol","gateway":30,"rating":1599,"standing":14215,"cwalRace":"T","wins":6,"losses":11,"battleTag":"탈주닌자겐지"},{"tier":"White","toon":"colakim[kS]","gateway":30,"rating":1565,"standing":15443,"cwalRace":"T","wins":7,"losses":7,"battleTag":"cocacola23"},{"tier":"Sky","toon":"Wls[kS]","gateway":30,"rating":1553,"standing":15867,"cwalRace":"Z","wins":2,"losses":7,"battleTag":"새로운주인"},{"tier":"Blue","toon":"100su_MOM","gateway":30,"rating":1522,"standing":16882,"cwalRace":"T","wins":3,"losses":3,"battleTag":"백수"},{"tier":"Blue","toon":"Eagles[kS]","gateway":30,"rating":1514,"standing":17165,"cwalRace":"Z","wins":1,"losses":4,"battleTag":"이글스"},{"tier":"Sky","toon":"gonjook[ks]","gateway":30,"rating":1504,"standing":17492,"cwalRace":"T","wins":70,"losses":72,"battleTag":"Real"},{"tier":"Sky","toon":"URSSU[kS]","gateway":30,"rating":1501,"standing":17599,"cwalRace":"T","wins":12,"losses":12,"battleTag":"김대호"},{"tier":"Blue","toon":"3Star_Jogak","gateway":30,"rating":1486,"standing":18079,"cwalRace":"Z","wins":21,"losses":18,"battleTag":"산산조각"},{"tier":"Black","toon":"Paralyze[kS]","gateway":30,"rating":1464,"standing":18849,"cwalRace":"P","wins":3,"losses":17,"battleTag":"스타는내인생"},{"tier":"Sky","toon":"FAIRI[kS]","gateway":30,"rating":1368,"standing":21326,"cwalRace":"P","wins":5,"losses":7,"battleTag":"Kyul"},{"tier":"Black","toon":"5252[kS]","gateway":30,"rating":1317,"standing":23071,"cwalRace":"Z","wins":0,"losses":0,"battleTag":""},{"tier":"Sky","toon":"Heaven[kS]","gateway":30,"rating":1287,"standing":23626,"cwalRace":"P","wins":10,"losses":15,"battleTag":"헤븐"},{"tier":"Sky","toon":"PhoeNix[kS]","gateway":30,"rating":1239,"standing":24602,"cwalRace":"T","wins":115,"losses":123,"battleTag":"불사조테란"},{"tier":"Gold","toon":"MuGwang[kS]","gateway":30,"rating":1194,"standing":25537,"cwalRace":"P","wins":0,"losses":17,"battleTag":"류재환"},{"tier":"Gold","toon":"ShaDOw[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Gold","toon":"One[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Yellow","toon":"sinsa[ks]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":3,"losses":0,"battleTag":"심따거"},{"tier":"Yellow","toon":"BW[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":""},{"tier":"Yellow","toon":"DynamiC[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"Z","wins":0,"losses":0,"battleTag":""},{"tier":"Red","toon":"SuSaeng[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":""},{"tier":"Violet","toon":"Blue[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Sky","toon":"BOOM[KS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":1,"battleTag":"엉뚱한바지"}]};</script>
+<script>window.KS_DATA = {"updated":"2026-09-02 22:29","rows":[{"tier":"Gold","toon":"ChogOsu[kS].","gateway":30,"rating":2345,"standing":192,"cwalRace":"Z","wins":31,"losses":19,"battleTag":"ChogOsu","mu":{"TvT":[0,1],"TvZ":[0,1],"ZvP":[16,3],"ZvT":[8,5],"ZvZ":[4,8]},"recent":[{"w":0,"m":"ZvP","o":"gO`ni","d":-26},{"w":0,"m":"ZvT","o":"IIIlIIIlIlIlIlI","d":-14},{"w":0,"m":"ZvT","o":"FamasOrigin","d":-16},{"w":1,"m":"ZvP","o":"llIIllIIlIIlIlI","d":22},{"w":1,"m":"ZvZ","o":"TemuSoma","d":20},{"w":1,"m":"ZvT","o":"NCS_Cho","d":14},{"w":1,"m":"ZvZ","o":"3256236236","d":11},{"w":1,"m":"ZvT","o":"IlllllI!llIllIl","d":18},{"w":0,"m":"ZvZ","o":"ggrg..","d":-19},{"w":1,"m":"ZvP","o":"3050_LLoyd","d":6}]},{"tier":"Gold","toon":"Lanma[kS]","gateway":30,"rating":2305,"standing":278,"cwalRace":"T","wins":21,"losses":9,"battleTag":"미친마법사","mu":{"TvP":[9,1],"TvT":[10,4],"TvZ":[12,5]},"recent":[]},{"tier":"Gold","toon":"Queen[KS]","gateway":30,"rating":2256,"standing":null,"cwalRace":"Z","wins":7,"losses":4,"battleTag":"jjabqueen","mu":{},"recent":[{"w":1,"m":"ZvP","o":"zizihome","d":10},{"w":0,"m":"ZvT","o":"oov[iris]","d":-18},{"w":1,"m":"ZvZ","o":"qwerty152","d":29},{"w":0,"m":"ZvZ","o":"thang`net","d":-28},{"w":0,"m":"ZvT","o":"wG_Shine","d":-28},{"w":1,"m":"ZvZ","o":"dfsafsdafsadfas","d":42},{"w":0,"m":"ZvZ","o":"dfsafsdafsadfas","d":-28},{"w":1,"m":"ZvZ","o":"MBU_Yabsab","d":90},{"w":1,"m":"ZvP","o":"lll11100","d":66},{"w":1,"m":"ZvP","o":"Wico`Pajuboy","d":42}]},{"tier":"Yellow","toon":"Siege[kS]","gateway":30,"rating":2244,"standing":485,"cwalRace":"T","wins":66,"losses":38,"battleTag":"잇팁","mu":{"TvP":[20,6],"TvT":[12,16],"TvZ":[19,13]},"recent":[]},{"tier":"Gold","toon":"qufgh[kS]","gateway":30,"rating":2243,"standing":493,"cwalRace":"T","wins":94,"losses":56,"battleTag":"정별호","mu":{"PvP":[0,1],"PvZ":[0,3],"TvP":[15,8],"TvT":[20,6],"TvZ":[20,11],"ZvT":[0,1]},"recent":[{"w":1,"m":"TvP","o":"rozi11","d":8},{"w":1,"m":"ZvT","o":"LnLnnnmmmLn","d":20},{"w":1,"m":"TvT","o":"EmikaShirakami","d":4},{"w":1,"m":"TvP","o":"lIIIIIIIlIIlll","d":4},{"w":0,"m":"TvT","o":"rjaekstls001","d":-14},{"w":1,"m":"TvP","o":"30k34","d":6},{"w":1,"m":"TvT","o":"Globeam","d":18},{"w":0,"m":"ZvT","o":"llIlIIIlllIlIll","d":-11},{"w":0,"m":"TvP","o":"WasWinter","d":-15},{"w":1,"m":"ZvT","o":"NamuGuns","d":11}]},{"tier":"Yellow","toon":"Maple[kS]","gateway":30,"rating":2228,"standing":579,"cwalRace":"Z","wins":38,"losses":15,"battleTag":"꼬마자객","mu":{"ZvP":[9,5],"ZvT":[9,5],"ZvZ":[11,5]},"recent":[{"w":1,"m":"ZvP","o":"NaMu....L","d":14},{"w":1,"m":"ZvZ","o":"SSBZERG","d":18},{"w":1,"m":"ZvT","o":"Feisty_SonSon","d":16},{"w":1,"m":"ZvT","o":"asdijqwe","d":16},{"w":1,"m":"ZvT","o":"Feisty_SonSon","d":13},{"w":1,"m":"ZvZ","o":"IIIIlllIllIlII","d":15},{"w":0,"m":"ZvT","o":"&-JuPlter","d":-23},{"w":1,"m":"ZvP","o":"Hroro00","d":2},{"w":0,"m":"ZvT","o":"ARB5000","d":-11},{"w":1,"m":"ZvT","o":"New`Hugo","d":18}]},{"tier":"Gold","toon":"Machine[kS]","gateway":30,"rating":2221,"standing":623,"cwalRace":"T","wins":7,"losses":0,"battleTag":"scv","mu":{"TvP":[3,0],"TvT":[1,0],"TvZ":[7,0]},"recent":[{"w":1,"m":"ZvT","o":"asgdashdgsahjd","d":26},{"w":1,"m":"TvT","o":"IIIlllIlllIIllI","d":25},{"w":1,"m":"TvT","o":"AIllllIIlll","d":88},{"w":1,"m":"TvP","o":"APXFH08","d":66},{"w":1,"m":"ZvT","o":"Black_PUBG","d":50},{"w":1,"m":"ZvT","o":"Black_PUBG","d":58},{"w":1,"m":"TvP","o":"Black_PUBG","d":76},{"w":0,"m":"ZvT","o":"ALLinALLwin","d":-20},{"w":1,"m":"TvP","o":"llllIIIIll!llll","d":24},{"w":1,"m":"ZvT","o":"Ballspline","d":22}]},{"tier":"Yellow","toon":"By[kS]","gateway":30,"rating":2208,"standing":710,"cwalRace":"P","wins":7,"losses":2,"battleTag":"송정우","mu":{},"recent":[{"w":1,"m":"TvP","o":"New`Hugo","d":54},{"w":1,"m":"TvP","o":"llllIIII1llllII","d":72},{"w":1,"m":"ZvP","o":"nOtatReaM","d":24},{"w":1,"m":"PvP","o":":ll:ll:llllllll","d":32},{"w":1,"m":"PvP","o":"dddunfgfd","d":56}]},{"tier":"Gold","toon":"sB[kS]","gateway":30,"rating":2199,"standing":783,"cwalRace":"T","wins":40,"losses":15,"battleTag":"MoKa","mu":{"TvP":[13,5],"TvT":[7,2],"TvZ":[10,5]},"recent":[]},{"tier":"Yellow","toon":"J.R[kS]","gateway":30,"rating":2197,"standing":800,"cwalRace":"T","wins":45,"losses":23,"battleTag":"저스틴리버","mu":{"TvP":[14,12],"TvT":[13,7],"TvZ":[9,4]},"recent":[{"w":1,"m":"TvT","o":"jliojliojli","d":8},{"w":1,"m":"TvT","o":"jliojliojli","d":7},{"w":1,"m":"TvT","o":"652612312341234","d":4},{"w":0,"m":"TvP","o":"lIIIlllIIl","d":-13},{"w":1,"m":"ZvT","o":"FakeAlphaGo","d":12},{"w":1,"m":"TvP","o":"sGGv","d":11},{"w":1,"m":"TvP","o":"sGGv","d":9},{"w":1,"m":"ZvT","o":"nagaseyo!!","d":12},{"w":0,"m":"ZvT","o":"llllIllIlIlIlIl","d":-19},{"w":1,"m":"TvT","o":"RoyaL1123","d":17}]},{"tier":"Yellow","toon":"knic[kS]","gateway":30,"rating":2185,"standing":871,"cwalRace":"Z","wins":12,"losses":5,"battleTag":"강수현","mu":{"TvP":[0,1],"TvT":[2,2],"ZvP":[3,0],"ZvT":[3,0],"ZvZ":[3,0]},"recent":[{"w":0,"m":"TvT","o":"IIlIlIIIIIIIlIl","d":-20},{"w":1,"m":"TvT","o":"IIlllllIIllIII","d":16},{"w":0,"m":"TvT","o":"IlllIIlIIlIllII","d":-29},{"w":1,"m":"TvT","o":"llIllllIl","d":26},{"w":0,"m":"TvP","o":"NCS_Bestt","d":-9},{"w":1,"m":"ZvZ","o":"lllIlIIllllll","d":52},{"w":1,"m":"ZvT","o":"[S.Tc]..new","d":19},{"w":1,"m":"ZvT","o":"afjlakl","d":19},{"w":1,"m":"ZvP","o":"bamtol1234","d":33},{"w":1,"m":"ZvZ","o":"NewRungni","d":23}]},{"tier":"Yellow","toon":"man12[kS]","gateway":30,"rating":2155,"standing":1148,"cwalRace":"T","wins":24,"losses":16,"battleTag":"거대한루비전차","mu":{"TvP":[5,9],"TvT":[6,3],"TvZ":[10,4]},"recent":[{"w":0,"m":"ZvT","o":"chobodariiiiiii","d":-6},{"w":1,"m":"TvT","o":"AR0HA","d":5},{"w":1,"m":"TvT","o":"MyDany","d":7},{"w":0,"m":"ZvT","o":"Jun`p0se","d":-16},{"w":1,"m":"TvT","o":"afjlakl","d":10},{"w":0,"m":"TvP","o":"dic_misong","d":-18},{"w":0,"m":"TvP","o":"rlrlrlrlrlrlqt","d":-20},{"w":1,"m":"TvP","o":"ShuttleRiverton","d":18},{"w":1,"m":"TvP","o":"llklliiliililil","d":19},{"w":1,"m":"ZvT","o":"hama-hyung","d":19}]},{"tier":"Gold","toon":"Cloud[kS]","gateway":30,"rating":2150,"standing":null,"cwalRace":"P","wins":9,"losses":5,"battleTag":"Cloud","mu":{"PvP":[8,2],"PvT":[1,1],"PvZ":[4,3]},"recent":[{"w":1,"m":"PvP","o":"dic_misong","d":28},{"w":0,"m":"PvP","o":"4241135631","d":-27},{"w":0,"m":"ZvP","o":"the_veritas","d":-28},{"w":0,"m":"PvP","o":"IlllIlIIIllk","d":-32},{"w":0,"m":"ZvP","o":"NCS_Gun","d":-17},{"w":0,"m":"ZvP","o":"TemuSoma","d":-13},{"w":1,"m":"PvP","o":"Prime[iris]","d":38},{"w":1,"m":"PvP","o":"sdfsdfagfgdfs","d":56},{"w":1,"m":"ZvP","o":"Jun`p0se","d":38},{"w":1,"m":"TvP","o":"100su_Escape","d":18}]},{"tier":"Gold","toon":"rmfmrm[kS]","gateway":30,"rating":2130,"standing":null,"cwalRace":"Z","wins":5,"losses":1,"battleTag":"깔끔한잿빛코도","mu":{"ZvP":[2,0],"ZvT":[2,0],"ZvZ":[1,1]},"recent":[{"w":1,"m":"ZvP","o":"Wico`EDK","d":19},{"w":1,"m":"ZvT","o":"AIllllIIlll","d":50},{"w":1,"m":"ZvP","o":"IllIll!IllIll!","d":46},{"w":0,"m":"ZvZ","o":"Dic_Kali","d":-76},{"w":1,"m":"ZvZ","o":"LuckGoo","d":50},{"w":1,"m":"ZvT","o":"gaesafew","d":12}]},{"tier":"Yellow","toon":"Poker[kS]","gateway":30,"rating":2120,"standing":1548,"cwalRace":"P","wins":5,"losses":2,"battleTag":"기운찬곰","mu":{},"recent":[]},{"tier":"Violet","toon":"SOVAVA[kS]","gateway":30,"rating":2120,"standing":1550,"cwalRace":"Z","wins":69,"losses":47,"battleTag":"엄청난마법사","mu":{"ZvP":[16,9],"ZvT":[18,11],"ZvZ":[14,12]},"recent":[]},{"tier":"Red","toon":"2525[kS]","gateway":30,"rating":2119,"standing":1555,"cwalRace":"Z","wins":87,"losses":68,"battleTag":"퀸옐로우","mu":{},"recent":[{"w":0,"m":"ZvP","o":"[shampoo]","d":-14},{"w":0,"m":"ZvP","o":"dnfldmlaltjsl","d":-16},{"w":0,"m":"ZvZ","o":"lllIIllIIIIllII","d":-7},{"w":1,"m":"ZvZ","o":"evolutioncomple","d":15},{"w":0,"m":"ZvZ","o":"evolutioncomple","d":-16},{"w":0,"m":"ZvP","o":"k1-0ak1-0a-k0","d":-4},{"w":1,"m":"ZvP","o":"eeeee12234","d":15},{"w":0,"m":"ZvT","o":"DIC_Nova","d":-18},{"w":1,"m":"ZvT","o":"IllIIIIlIIIIllt","d":19},{"w":1,"m":"ZvT","o":"IllIIIIlIIIIllt","d":20}]},{"tier":"Violet","toon":"HyunVOice[kS]","gateway":30,"rating":2118,"standing":1583,"cwalRace":"Z","wins":152,"losses":117,"battleTag":"현보이스","mu":{},"recent":[{"w":1,"m":"ZvZ","o":"vvvwwvwvwvwwvv","d":23},{"w":1,"m":"ZvP","o":"[shampoo]","d":16},{"w":1,"m":"ZvT","o":"3050_GodHonDon+","d":19},{"w":0,"m":"ZvZ","o":"TuF`GOM2","d":-9},{"w":0,"m":"ZvZ","o":"TPZ`Swan","d":-10},{"w":1,"m":"ZvZ","o":"DM_Invincible","d":15},{"w":1,"m":"ZvP","o":"Astro_Star","d":13},{"w":1,"m":"ZvP","o":"4Bu","d":4},{"w":0,"m":"ZvP","o":"5DroneALLIN","d":-22},{"w":1,"m":"ZvT","o":"gggg1254125","d":15}]},{"tier":"Red","toon":"Comodo[kS]","gateway":30,"rating":2117,"standing":1594,"cwalRace":"P","wins":4,"losses":1,"battleTag":"Comodo","mu":{"PvT":[1,0],"PvZ":[2,1]},"recent":[]},{"tier":"Yellow","toon":"JM[kS]","gateway":30,"rating":2098,"standing":1861,"cwalRace":"T","wins":125,"losses":92,"battleTag":"정민이","mu":{"TvP":[17,14],"TvT":[7,10],"TvZ":[21,15]},"recent":[{"w":1,"m":"TvT","o":"2evee","d":15},{"w":0,"m":"ZvT","o":"IIIllllIlIIllI","d":-14},{"w":1,"m":"ZvT","o":"chvcneiiLiLiLil","d":3},{"w":0,"m":"TvP","o":"lin88442211","d":-15},{"w":1,"m":"ZvT","o":"UnLuckyGuy.","d":7},{"w":1,"m":"ZvT","o":"alsghgop","d":5},{"w":0,"m":"ZvT","o":"llIlIIIlllIlIll","d":-10},{"w":1,"m":"ZvT","o":"PKM_JAMMANBO","d":8},{"w":0,"m":"TvP","o":"3050_SEON","d":-13},{"w":1,"m":"ZvT","o":"Liverpool...","d":9}]},{"tier":"Yellow","toon":"MiNi[kS]","gateway":30,"rating":2092,"standing":1959,"cwalRace":"P","wins":8,"losses":5,"battleTag":"내이름은갓조","mu":{"PvP":[3,2],"PvT":[1,1],"PvZ":[2,0]},"recent":[{"w":0,"m":"TvP","o":"valks","d":-26},{"w":1,"m":"TvP","o":"valks","d":25},{"w":0,"m":"PvP","o":"forcesunghyun","d":-32},{"w":1,"m":"PvP","o":"asjkhdukas","d":43},{"w":1,"m":"PvP","o":"87879887","d":36},{"w":1,"m":"PvP","o":"New`DoubleJay","d":25},{"w":1,"m":"ZvP","o":"chookshindoo","d":54},{"w":1,"m":"ZvP","o":"4123213213","d":60},{"w":0,"m":"PvP","o":"ExcessiveLy","d":-34},{"w":1,"m":"TvP","o":"weyaeyweywey","d":70}]},{"tier":"Yellow","toon":"Karu[ks]","gateway":30,"rating":2090,"standing":1971,"cwalRace":"P","wins":10,"losses":5,"battleTag":"나무","mu":{},"recent":[{"w":1,"m":"TvP","o":"3050_ahrvy","d":27},{"w":0,"m":"ZvP","o":"vvvwwvwvwvwwvv","d":-29},{"w":1,"m":"ZvP","o":"lllII1llIIlll","d":29},{"w":1,"m":"PvP","o":"CHOCO[PIE]","d":22},{"w":0,"m":"ZvP","o":"JJabdy","d":-17},{"w":0,"m":"PvP","o":"CHOCO[PIE]","d":-31},{"w":1,"m":"TvP","o":"AX_C0NG","d":30},{"w":1,"m":"TvP","o":"puo09thjutrwf","d":24},{"w":1,"m":"PvP","o":"GOOD8OY","d":39},{"w":1,"m":"PvP","o":"lllIIlllIIlII","d":32}]},{"tier":"Black","toon":"ivOry[kS]","gateway":30,"rating":2088,"standing":1991,"cwalRace":"Z","wins":18,"losses":11,"battleTag":"인치호","mu":{"ZvP":[1,0],"ZvT":[1,0],"ZvZ":[1,0]},"recent":[{"w":1,"m":"ZvT","o":"PDES","d":25},{"w":1,"m":"ZvP","o":"il1i2l3il45i6li","d":30},{"w":1,"m":"ZvP","o":"Attackoov","d":22},{"w":1,"m":"ZvZ","o":"qa---------","d":25},{"w":0,"m":"ZvT","o":"sfgharfgasrgfa","d":-33},{"w":0,"m":"ZvT","o":"BIack_Ung","d":-42},{"w":0,"m":"ZvT","o":"sfgharfgasrgfa","d":-43},{"w":0,"m":"ZvP","o":"[ACE]CoDeR","d":-26},{"w":0,"m":"ZvP","o":"TOSS_VULLY","d":-39},{"w":0,"m":"ZvZ","o":"IIIlIllIIllIII","d":-33}]},{"tier":"Yellow","toon":"TrasH[kS]","gateway":30,"rating":2088,"standing":1993,"cwalRace":"P","wins":11,"losses":6,"battleTag":"Barcelona","mu":{"PvP":[3,1],"PvT":[1,0]},"recent":[{"w":1,"m":"PvP","o":"12323332211","d":24},{"w":1,"m":"PvP","o":"00_WiFi","d":44},{"w":1,"m":"PvP","o":".tuki","d":14},{"w":1,"m":"TvP","o":"BoomerTerran","d":68},{"w":0,"m":"PvP","o":"Fjo","d":-22},{"w":1,"m":"PvP","o":"magodzak","d":62}]},{"tier":"Gold","toon":"Ranma[kS]","gateway":30,"rating":2083,"standing":2047,"cwalRace":"T","wins":26,"losses":14,"battleTag":"찍찍","mu":{"PvP":[3,2],"PvT":[3,1],"PvZ":[2,1],"TvP":[3,0],"TvT":[4,3],"TvZ":[3,2],"ZvP":[3,3],"ZvT":[1,1],"ZvZ":[1,0]},"recent":[{"w":1,"m":"ZvP","o":"Feisty_Togo","d":5},{"w":0,"m":"ZvP","o":"3050_kyak","d":-21},{"w":0,"m":"TvT","o":"cortis","d":-22},{"w":0,"m":"TvT","o":"632man","d":-12},{"w":1,"m":"ZvP","o":"sunsguns","d":9},{"w":0,"m":"ZvP","o":"&-QuickIy","d":-21},{"w":0,"m":"TvT","o":"dfskds","d":-14},{"w":0,"m":"PvP","o":"black_cat","d":-24},{"w":1,"m":"TvT","o":"IlllllllIlIIIll","d":8},{"w":0,"m":"ZvT","o":"n45u","d":-16}]},{"tier":"Blue","toon":"Forward[kS]","gateway":10,"rating":2082,"standing":2050,"cwalRace":"T","wins":4,"losses":1,"battleTag":"CraDius","mu":{},"recent":[]},{"tier":"Yellow","toon":"bushdog[ks]","gateway":30,"rating":2077,"standing":2120,"cwalRace":"Z","wins":21,"losses":13,"battleTag":"그림자용","mu":{},"recent":[{"w":1,"m":"ZvZ","o":"lIlIIlI!IlIIlll","d":10},{"w":0,"m":"ZvT","o":"NurseMan2","d":-11},{"w":1,"m":"ZvT","o":"FHFGHHFGDHFDG","d":27},{"w":1,"m":"ZvZ","o":"BLALLA","d":14},{"w":1,"m":"ZvZ","o":"zxcasdovkkdif","d":11},{"w":1,"m":"ZvP","o":"gooooodmaaaaaan","d":10},{"w":1,"m":"ZvP","o":"1492568","d":8},{"w":1,"m":"ZvZ","o":"sdfeiweiuIjd2I1","d":14},{"w":0,"m":"ZvP","o":"maksomniso","d":-26},{"w":0,"m":"ZvT","o":"DQWVEQWEVQQQ","d":-31}]},{"tier":"Gold","toon":"DivinE[kS]","gateway":30,"rating":2055,"standing":2456,"cwalRace":"P","wins":28,"losses":20,"battleTag":"Bisu","mu":{"PvP":[4,4],"PvT":[10,4],"PvZ":[8,8]},"recent":[{"w":1,"m":"ZvP","o":"Black_soma","d":8},{"w":0,"m":"PvP","o":"______~~~~~~~~~","d":-10},{"w":1,"m":"ZvP","o":"D7-MMXSC","d":12},{"w":1,"m":"PvP","o":"na_du)","d":4},{"w":0,"m":"PvP","o":"chopstick5","d":-24},{"w":0,"m":"TvP","o":"IIlIIlIIIlIliuh","d":-22},{"w":0,"m":"TvP","o":"JM[kS]","d":-13},{"w":0,"m":"ZvP","o":"evolutioncomple","d":-15},{"w":1,"m":"TvP","o":"DIC_SJ","d":9},{"w":0,"m":"ZvP","o":"P90)ANDEL","d":-23}]},{"tier":"Red","toon":"siki[ks]","gateway":30,"rating":2053,"standing":2493,"cwalRace":"P","wins":20,"losses":6,"battleTag":"Absolute","mu":{"PvP":[3,1],"PvT":[6,2],"PvZ":[9,2]},"recent":[]},{"tier":"Violet","toon":"Runner[kS]","gateway":30,"rating":2047,"standing":2619,"cwalRace":"P","wins":22,"losses":8,"battleTag":"Subin","mu":{"PvP":[6,1],"PvT":[6,3],"PvZ":[7,4]},"recent":[{"w":1,"m":"ZvP","o":"kyWkdWkdman","d":21},{"w":1,"m":"TvP","o":"51FG5KTYOLTYP;L","d":16},{"w":1,"m":"TvP","o":"llakffmagoo11","d":15},{"w":1,"m":"TvP","o":"IllIIIlIlllIlI","d":24},{"w":1,"m":"TvP","o":"Slayers3","d":16},{"w":1,"m":"PvP","o":"Talent","d":17},{"w":1,"m":"PvP","o":"Talent","d":16},{"w":1,"m":"PvP","o":"Acaciaya","d":16},{"w":0,"m":"ZvP","o":"2Fighters_SIG","d":-18},{"w":0,"m":"ZvP","o":"lllllIIIllI99","d":-28}]},{"tier":"Violet","toon":"Jun[kS]","gateway":30,"rating":2038,"standing":2881,"cwalRace":"T","wins":63,"losses":48,"battleTag":"짭재호","mu":{"TvP":[12,16],"TvT":[11,9],"TvZ":[18,16]},"recent":[]},{"tier":"Violet","toon":"9oodbye[kS]","gateway":30,"rating":2032,"standing":3078,"cwalRace":"T","wins":11,"losses":3,"battleTag":"밤수킹","mu":{"TvP":[3,1],"TvZ":[4,2]},"recent":[]},{"tier":"Blue","toon":"ickle[kS]","gateway":30,"rating":2031,"standing":3124,"cwalRace":"Z","wins":34,"losses":22,"battleTag":"수정홀","mu":{"ZvP":[11,9],"ZvT":[6,6],"ZvZ":[9,3]},"recent":[{"w":1,"m":"ZvZ","o":"carimbemzema","d":12},{"w":1,"m":"ZvZ","o":"Calculus","d":12},{"w":1,"m":"ZvP","o":"SISUN","d":14},{"w":0,"m":"ZvP","o":"llIIIIlllIII","d":-20},{"w":0,"m":"ZvT","o":"34a6jkm3aj6a3","d":-9},{"w":1,"m":"ZvP","o":"IIlIIIIlllIlIIl","d":19},{"w":1,"m":"ZvP","o":"IIlIIIIlllIlIIl","d":20},{"w":1,"m":"ZvZ","o":"PN_[Army]","d":9},{"w":1,"m":"ZvP","o":"0perationCwalI","d":4},{"w":0,"m":"ZvZ","o":"lIlIl1IlIlIlllI","d":-15}]},{"tier":"Violet","toon":"gray[ks]","gateway":30,"rating":1999,"standing":3633,"cwalRace":"T","wins":10,"losses":4,"battleTag":"사가","mu":{"TvT":[0,1],"TvZ":[6,1]},"recent":[{"w":1,"m":"ZvT","o":"Combattt","d":14},{"w":0,"m":"ZvT","o":"lllIIIlIlIlll","d":-31},{"w":1,"m":"ZvT","o":"zsfdfdgafdg","d":36},{"w":1,"m":"TvP","o":"ruarua","d":24},{"w":1,"m":"ZvT","o":"Calculus","d":26},{"w":1,"m":"ZvT","o":"eargeargaerfaer","d":28},{"w":0,"m":"TvT","o":"913985812","d":-44},{"w":1,"m":"TvT","o":"BbBbDdSsAaZzCcI","d":32},{"w":1,"m":"ZvT","o":"zsfdfdgafdg","d":78},{"w":1,"m":"ZvT","o":"BOWNDRONE","d":32}]},{"tier":"Violet","toon":"Stardust[kS]","gateway":30,"rating":1998,"standing":3651,"cwalRace":"P","wins":22,"losses":16,"battleTag":"뱃살만효도르","mu":{"PvP":[1,6],"PvT":[4,1],"PvZ":[2,2]},"recent":[]},{"tier":"Yellow","toon":"Notable[kS]","gateway":30,"rating":1994,"standing":3699,"cwalRace":"Z","wins":25,"losses":19,"battleTag":"Koreanair","mu":{"ZvP":[5,8],"ZvT":[7,5],"ZvZ":[9,2]},"recent":[{"w":0,"m":"ZvP","o":"llllllIliIli1","d":-6},{"w":1,"m":"ZvP","o":"4859597875","d":16},{"w":0,"m":"ZvT","o":"ProJecT93","d":-17},{"w":0,"m":"ZvT","o":"Feisty_SonSon2","d":-11},{"w":1,"m":"ZvZ","o":"88B88","d":14},{"w":1,"m":"ZvZ","o":"[][]-=-=-=0","d":13},{"w":0,"m":"ZvZ","o":"CuteGirl2400go","d":-10},{"w":1,"m":"ZvP","o":"Twins[iris]","d":14},{"w":0,"m":"ZvT","o":"JoWKdWkddlek","d":-21},{"w":1,"m":"ZvP","o":"Protoss(winner)","d":9}]},{"tier":"Violet","toon":"Elephant[kS]","gateway":30,"rating":1992,"standing":3719,"cwalRace":"T","wins":16,"losses":3,"battleTag":"lIlIlIlllllI","mu":{"PvP":[0,1],"PvZ":[2,0],"TvP":[21,10],"TvT":[20,10],"TvZ":[13,10],"ZvP":[2,0],"ZvZ":[1,0]},"recent":[{"w":0,"m":"TvT","o":"eelrjesdf","d":-26},{"w":0,"m":"TvT","o":"Hanatan[WHITE]","d":-6},{"w":0,"m":"TvP","o":"tshutshu","d":-16},{"w":1,"m":"TvT","o":"ewwfweef3655","d":19},{"w":1,"m":"TvP","o":"IIIlIIIlllIIII","d":23},{"w":1,"m":"TvT","o":"[]][][][][]][]]","d":5},{"w":1,"m":"TvT","o":"3050_JOOBari","d":9},{"w":1,"m":"TvP","o":"RageRageRageXXX","d":2},{"w":0,"m":"TvT","o":"adkljfaslk","d":-14},{"w":1,"m":"TvP","o":"GG_TimingIsFast","d":12}]},{"tier":"Red","toon":"Insanity[kS]","gateway":30,"rating":1975,"standing":3960,"cwalRace":"P","wins":31,"losses":22,"battleTag":"sinhus","mu":{"PvP":[11,9],"PvT":[10,8],"PvZ":[7,3]},"recent":[{"w":0,"m":"TvP","o":"lIlIllElIlIlIll","d":-7},{"w":1,"m":"PvP","o":"IllllIllIIIlI.","d":8},{"w":1,"m":"TvP","o":"TemuLight","d":13},{"w":0,"m":"PvP","o":"Gapatama","d":-10},{"w":1,"m":"PvP","o":"Akris","d":17},{"w":0,"m":"PvP","o":"daramge..","d":-15},{"w":0,"m":"TvP","o":"afjlakl","d":-14},{"w":1,"m":"TvP","o":"IIlIlIlllIlIlI","d":18},{"w":1,"m":"ZvP","o":"IIIlll1lililil1","d":13},{"w":1,"m":"TvP","o":"LimControl","d":18}]},{"tier":"Violet","toon":"AngSangGuk[kS]","gateway":30,"rating":1970,"standing":4025,"cwalRace":"P","wins":3,"losses":3,"battleTag":"상국","mu":{},"recent":[{"w":0,"m":"TvP","o":"Skubal","d":-18},{"w":1,"m":"TvP","o":"Chldvl","d":46},{"w":0,"m":"PvP","o":"2400gogo","d":-44},{"w":1,"m":"TvP","o":"02131011","d":48},{"w":0,"m":"PvP","o":"khm6362","d":-48},{"w":1,"m":"TvP","o":"IllIllII","d":80}]},{"tier":"Red","toon":"SungA[kS]","gateway":30,"rating":1962,"standing":4171,"cwalRace":"Z","wins":6,"losses":1,"battleTag":"성아","mu":{"PvT":[1,0],"TvZ":[1,0],"ZvP":[10,8],"ZvT":[9,6],"ZvZ":[10,9]},"recent":[{"w":1,"m":"ZvP","o":"vvwwvwvvvwwvvw","d":32},{"w":1,"m":"TvP","o":"IoO0llIoOOIO","d":48},{"w":1,"m":"TvP","o":"0000i0i0i00i","d":52},{"w":1,"m":"ZvP","o":"pGf]Dunkelvolk-","d":52},{"w":0,"m":"ZvP","o":"tomatojuice!","d":-18},{"w":1,"m":"ZvP","o":"WH-STEED","d":10},{"w":0,"m":"ZvP","o":"dic_misong","d":-16},{"w":0,"m":"ZvZ","o":"CuteGirl2400go","d":-12},{"w":0,"m":"ZvZ","o":"IIllllllllIIIl'","d":-14},{"w":1,"m":"ZvZ","o":"IIllllllllIIIl'","d":17}]},{"tier":"Gold","toon":"haO[kS]","gateway":30,"rating":1961,"standing":4185,"cwalRace":"Z","wins":7,"losses":6,"battleTag":"OPSS","mu":{"ZvP":[3,1],"ZvT":[3,0],"ZvZ":[0,3]},"recent":[{"w":1,"m":"ZvP","o":"IIIllIIlllllllI","d":32},{"w":0,"m":"ZvZ","o":"TuF`SacSry","d":-26},{"w":0,"m":"ZvZ","o":"SJHJON","d":-39},{"w":1,"m":"ZvP","o":"15yearsofaccel","d":39},{"w":0,"m":"ZvP","o":"hayandal","d":-35},{"w":1,"m":"ZvT","o":"321897312789312","d":28},{"w":1,"m":"ZvP","o":"BeomBu","d":29},{"w":0,"m":"ZvZ","o":"okamle","d":-20},{"w":0,"m":"ZvZ","o":"Wico`Caps","d":-94},{"w":1,"m":"ZvT","o":"[ACE]A","d":62}]},{"tier":"Red","toon":"HanSoL[kS]","gateway":30,"rating":1960,"standing":4198,"cwalRace":"Z","wins":9,"losses":5,"battleTag":"무럭","mu":{},"recent":[]},{"tier":"Violet","toon":"Berry[KS]","gateway":30,"rating":1956,"standing":4266,"cwalRace":"Z","wins":13,"losses":7,"battleTag":"베리","mu":{"ZvP":[1,1],"ZvT":[2,2],"ZvZ":[2,3]},"recent":[{"w":1,"m":"ZvT","o":"olikeo;[[[]]","d":18},{"w":0,"m":"ZvZ","o":"daehunjung","d":-34},{"w":1,"m":"ZvZ","o":"lfdfassd","d":21},{"w":0,"m":"ZvT","o":"sjifna0in","d":-32},{"w":1,"m":"ZvT","o":"89413212","d":22},{"w":0,"m":"ZvZ","o":"novo3","d":-27},{"w":1,"m":"ZvZ","o":"TuF`Reze","d":35},{"w":0,"m":"ZvT","o":"SHOWTlME","d":-40},{"w":0,"m":"ZvP","o":"llillill!llll","d":-58},{"w":1,"m":"ZvZ","o":"0673456","d":48}]},{"tier":"Red","toon":"gom[kS]","gateway":30,"rating":1951,"standing":4358,"cwalRace":"P","wins":4,"losses":2,"battleTag":"곰곰곰","mu":{"PvP":[0,1],"PvT":[1,1],"PvZ":[2,0]},"recent":[]},{"tier":"Red","toon":"Coni[ks]","gateway":30,"rating":1948,"standing":4410,"cwalRace":"Z","wins":27,"losses":22,"battleTag":"suksamo86","mu":{},"recent":[{"w":0,"m":"ZvP","o":"2352345235","d":-11},{"w":0,"m":"ZvZ","o":"IIIllIIlllIllI","d":-11},{"w":1,"m":"ZvP","o":"tossgirl`net","d":30},{"w":1,"m":"ZvZ","o":"boriboribari","d":23},{"w":1,"m":"ZvZ","o":"sadvxzcvqrqwe","d":14},{"w":1,"m":"ZvP","o":"GGoRaBakJihyuN","d":9},{"w":1,"m":"ZvP","o":"1818ppanoo","d":3},{"w":0,"m":"ZvP","o":"000717","d":-10},{"w":1,"m":"PvP","o":"IIIIIIII-IIIIII","d":2},{"w":1,"m":"ZvP","o":"ManZhu","d":14}]},{"tier":"Red","toon":"Easygoing[ks]","gateway":30,"rating":1936,"standing":4623,"cwalRace":"Z","wins":4,"losses":4,"battleTag":"정석","mu":{},"recent":[{"w":0,"m":"ZvP","o":"llIIIIIIllIII","d":-70},{"w":0,"m":"ZvT","o":"che0ngJu","d":-54},{"w":1,"m":"ZvP","o":"SungMin[WHITE]","d":80},{"w":1,"m":"ZvP","o":"fasdjfklasdjf","d":56},{"w":0,"m":"ZvP","o":"OhMyJB","d":-48}]},{"tier":"Red","toon":"Arch[kS]","gateway":30,"rating":1935,"standing":4637,"cwalRace":"T","wins":20,"losses":17,"battleTag":"뭐가뭔지","mu":{"TvP":[7,3],"TvT":[2,1],"TvZ":[4,5]},"recent":[{"w":1,"m":"TvP","o":"l!!lll!!ll","d":16},{"w":1,"m":"ZvT","o":"][]']][=","d":17},{"w":1,"m":"TvP","o":"1P_wassub","d":15},{"w":0,"m":"TvP","o":"[ACE]NEUK9","d":-17},{"w":1,"m":"TvP","o":"TwillightForce","d":30},{"w":1,"m":"TvP","o":"kky820620","d":14},{"w":0,"m":"TvP","o":"tongsud","d":-19},{"w":1,"m":"ZvT","o":"AAAAA1AAA2AAAA3","d":13},{"w":1,"m":"ZvT","o":"fgsdjlk54","d":26},{"w":0,"m":"ZvT","o":"BEAST_Saeng9","d":-12}]},{"tier":"Violet","toon":"Flak88[kS]","gateway":30,"rating":1929,"standing":4765,"cwalRace":"T","wins":22,"losses":17,"battleTag":"메딕","mu":{},"recent":[]},{"tier":"Red","toon":"Stone[kS]","gateway":30,"rating":1925,"standing":4846,"cwalRace":"T","wins":102,"losses":93,"battleTag":"kima","mu":{"TvP":[24,18],"TvT":[4,15],"TvZ":[13,18]},"recent":[{"w":1,"m":"TvP","o":"lIIlIIlIllIIIll","d":14},{"w":1,"m":"ZvT","o":"lIIlllIIIllIII","d":15},{"w":0,"m":"ZvT","o":"dahjsdfhjnkasdf","d":-11},{"w":0,"m":"ZvT","o":"ItalyPizza","d":-16},{"w":0,"m":"TvT","o":"TheFirsT_","d":-15},{"w":0,"m":"ZvT","o":"ddenise","d":-17},{"w":1,"m":"TvP","o":"dovis","d":13},{"w":1,"m":"ZvT","o":"TwoBailey","d":17},{"w":0,"m":"TvP","o":"tpz`chloe","d":-19},{"w":1,"m":"TvT","o":"AK_HomingGuri","d":24}]},{"tier":"Violet","toon":"Calm[kS]","gateway":30,"rating":1923,"standing":4875,"cwalRace":"Z","wins":15,"losses":9,"battleTag":"용땅","mu":{"ZvP":[6,5],"ZvT":[1,0],"ZvZ":[1,0]},"recent":[]},{"tier":"Violet","toon":"SoUL[kS]","gateway":30,"rating":1920,"standing":4943,"cwalRace":"T","wins":53,"losses":30,"battleTag":"SoUL","mu":{},"recent":[{"w":1,"m":"TvP","o":"WFasdfads","d":13},{"w":0,"m":"ZvT","o":"PN_[Army]","d":-21},{"w":1,"m":"ZvT","o":"12346576531","d":6},{"w":0,"m":"ZvT","o":"8J4J35345","d":-17},{"w":0,"m":"TvT","o":"IllIlIlllIllI","d":-8},{"w":1,"m":"TvP","o":"Messia1010","d":14},{"w":0,"m":"TvP","o":"db)choco","d":-18},{"w":0,"m":"TvP","o":"ArankToss","d":-16},{"w":0,"m":"TvP","o":"By.Show1","d":-16},{"w":1,"m":"TvT","o":"dbmputer","d":13}]},{"tier":"Violet","toon":"xkshtm[kS]","gateway":30,"rating":1910,"standing":5153,"cwalRace":"P","wins":42,"losses":26,"battleTag":"Safety","mu":{"PvP":[15,5],"PvT":[7,5],"PvZ":[9,8]},"recent":[{"w":1,"m":"TvP","o":"JJeomPal2","d":12},{"w":1,"m":"PvP","o":"HIHDIFHDF","d":15},{"w":0,"m":"ZvP","o":"c('')o`Tyr","d":-13},{"w":1,"m":"ZvP","o":"taerat","d":10},{"w":0,"m":"ZvP","o":"UJB_HERO","d":-16},{"w":1,"m":"ZvP","o":"lllIIIlIIIlIIIl","d":20},{"w":1,"m":"PvP","o":"qazxcasd","d":21},{"w":1,"m":"TvP","o":"LEEKANGIN10","d":15},{"w":1,"m":"TvP","o":"dfgdfag4564rtg","d":3},{"w":1,"m":"PvP","o":"tjqwl.","d":15}]},{"tier":"Blue","toon":"5Drone[kS]","gateway":30,"rating":1903,"standing":5294,"cwalRace":"Z","wins":49,"losses":33,"battleTag":"아나","mu":{"ZvP":[12,15],"ZvT":[7,6],"ZvZ":[11,6]},"recent":[]},{"tier":"Red","toon":"OneTo[kS]","gateway":30,"rating":1876,"standing":null,"cwalRace":"T","wins":22,"losses":20,"battleTag":"운좋은호랑이","mu":{},"recent":[{"w":0,"m":"TvT","o":"Feisty_SonSon2","d":-8},{"w":0,"m":"ZvT","o":"fkdjhIghjkIjhgI","d":-21},{"w":1,"m":"ZvT","o":"Baccahus.D","d":18},{"w":1,"m":"ZvT","o":"NJU_Lovedan","d":20},{"w":1,"m":"ZvT","o":"NJU_Lovedan","d":21},{"w":1,"m":"TvP","o":"Banmalnam","d":13},{"w":1,"m":"TvT","o":"lalalarilalarir","d":13},{"w":0,"m":"ZvT","o":"Frenz[Z]Lee","d":-12},{"w":1,"m":"TvT","o":"xiaojiqiang","d":15},{"w":0,"m":"TvP","o":"36DB","d":-8}]},{"tier":"Violet","toon":"GGPlay[kS]","gateway":30,"rating":1871,"standing":6024,"cwalRace":"Z","wins":5,"losses":4,"battleTag":"꾀돌이","mu":{},"recent":[]},{"tier":"Violet","toon":"d0ng[kS]","gateway":30,"rating":1867,"standing":6097,"cwalRace":"P","wins":66,"losses":57,"battleTag":"동칼동칼","mu":{},"recent":[{"w":0,"m":"ZvP","o":"lIlI1lIlIlll","d":-18},{"w":1,"m":"ZvP","o":"dnekdekdgks1","d":11},{"w":0,"m":"PvP","o":"lll!llIIlIlIlll","d":-20},{"w":0,"m":"ZvP","o":"000717","d":-7},{"w":0,"m":"PvP","o":"02312515213","d":-22},{"w":1,"m":"PvP","o":"flowwwwwwwwwwww","d":10},{"w":1,"m":"PvP","o":"Protoss(winner)","d":12},{"w":0,"m":"ZvP","o":"scgotoboy","d":-5},{"w":1,"m":"ZvP","o":"CCZ_DaMian","d":12},{"w":1,"m":"PvP","o":"songweihaogege","d":13}]},{"tier":"Blue","toon":"ddakddak2[ks]","gateway":30,"rating":1866,"standing":6120,"cwalRace":"P","wins":60,"losses":46,"battleTag":"강창모","mu":{"PvP":[2,4],"PvT":[5,5],"PvZ":[6,3]},"recent":[{"w":1,"m":"ZvP","o":"so[war]","d":23},{"w":0,"m":"PvP","o":"lIllllllIlllII","d":-10},{"w":1,"m":"TvP","o":"lotteriagang","d":10},{"w":0,"m":"ZvP","o":"sks0421","d":-17},{"w":0,"m":"TvP","o":"Tiguham","d":-12},{"w":1,"m":"TvP","o":"lip`1st","d":39},{"w":1,"m":"PvP","o":"llIIIlIIIIIIl","d":25},{"w":1,"m":"ZvP","o":"u_u_zerg","d":17},{"w":1,"m":"ZvP","o":"dfolsijchvpowjd","d":7},{"w":0,"m":"PvP","o":"CCZ-junma","d":-5}]},{"tier":"Red","toon":"Teo[kS]","gateway":30,"rating":1842,"standing":6733,"cwalRace":"T","wins":18,"losses":10,"battleTag":"쩡태오","mu":{},"recent":[{"w":1,"m":"ZvT","o":"SaKeRu","d":12},{"w":0,"m":"TvT","o":"IlIlIIlIIIlllI","d":-10},{"w":1,"m":"TvT","o":"eolre","d":15},{"w":0,"m":"TvP","o":"[ACE]H","d":-18},{"w":0,"m":"ZvT","o":"0_Dalsoo","d":-16},{"w":1,"m":"ZvT","o":"rubyi","d":24},{"w":1,"m":"TvT","o":"IllIlIllIlllll1","d":12},{"w":1,"m":"ZvT","o":"qweee22112312q","d":19},{"w":1,"m":"TvT","o":"[S.Tc]..Riya","d":33},{"w":0,"m":"TvP","o":"lIIlI!lii!i!iiI","d":-22}]},{"tier":"Violet","toon":"Axe[kS]","gateway":30,"rating":1833,"standing":6955,"cwalRace":"T","wins":3,"losses":3,"battleTag":"졸린곰","mu":{},"recent":[]},{"tier":"Blue","toon":"KATANA[kS]","gateway":30,"rating":1817,"standing":7410,"cwalRace":"P","wins":182,"losses":185,"battleTag":"번듯한오크","mu":{"PvP":[18,8],"PvT":[15,10],"PvZ":[9,12]},"recent":[]},{"tier":"Sky","toon":"Fleta[kS]","gateway":30,"rating":1815,"standing":7456,"cwalRace":"P","wins":5,"losses":0,"battleTag":"플레타타","mu":{"PvP":[1,0],"PvT":[0,1],"PvZ":[0,2]},"recent":[{"w":0,"m":"ZvP","o":"CCZ_LosTsAviOr","d":-60},{"w":0,"m":"ZvP","o":"YAIN_Maruoka","d":-54},{"w":0,"m":"TvP","o":"asdf12ggasdfsd1","d":-16},{"w":1,"m":"PvP","o":"HiByeGGyo","d":76},{"w":1,"m":"PvP","o":"Lovelyda2","d":34}]},{"tier":"Blue","toon":"Its[kS]","gateway":30,"rating":1808,"standing":7669,"cwalRace":"P","wins":5,"losses":4,"battleTag":"이츠","mu":{"PvP":[2,0],"PvZ":[0,3]},"recent":[]},{"tier":"Violet","toon":"9008[KS]","gateway":30,"rating":1798,"standing":7965,"cwalRace":"P","wins":6,"losses":1,"battleTag":"Shuttle","mu":{},"recent":[]},{"tier":"Sky","toon":"BBBuuuUU[kS]","gateway":30,"rating":1781,"standing":8440,"cwalRace":"Z","wins":17,"losses":12,"battleTag":"Scouterpa","mu":{"ZvP":[2,3],"ZvT":[4,3],"ZvZ":[3,1]},"recent":[]},{"tier":"Blue","toon":"Hades[ks]","gateway":30,"rating":1766,"standing":8908,"cwalRace":"P","wins":29,"losses":23,"battleTag":"asd13","mu":{},"recent":[]},{"tier":"Violet","toon":"BANDI[kS]","gateway":30,"rating":1741,"standing":9922,"cwalRace":"Z","wins":15,"losses":11,"battleTag":"광포한까마귀","mu":{"ZvP":[0,2],"ZvT":[1,1],"ZvZ":[7,0]},"recent":[{"w":0,"m":"ZvP","o":"lllIIllIllllIIl","d":-25},{"w":0,"m":"ZvZ","o":"lllIIIlIlIlll","d":-19},{"w":1,"m":"ZvZ","o":"iillilllllillil","d":7},{"w":1,"m":"ZvZ","o":"`41242354","d":21},{"w":1,"m":"ZvT","o":"llIllIIlllIlIlI","d":23},{"w":0,"m":"ZvT","o":"IllIIIlIIlIllll","d":-32},{"w":1,"m":"ZvZ","o":"ARena_Ggobugi","d":21},{"w":1,"m":"ZvZ","o":"Baccahus.D","d":20},{"w":1,"m":"ZvZ","o":"98-98-","d":37},{"w":1,"m":"","o":"sorimsoccer7lIl","d":15}]},{"tier":"Sky","toon":"KanCho[kS]","gateway":30,"rating":1730,"standing":10182,"cwalRace":"Z","wins":71,"losses":68,"battleTag":"KanCho","mu":{"ZvP":[13,22],"ZvT":[9,15],"ZvZ":[6,9]},"recent":[{"w":1,"m":"ZvT","o":"sdfghh","d":13},{"w":0,"m":"ZvT","o":"567jyi678j","d":-13},{"w":1,"m":"ZvP","o":"lIllIIlIIIlll","d":20},{"w":0,"m":"ZvT","o":"YMH_Pacifica","d":-15},{"w":1,"m":"ZvZ","o":"zsfdfdgafdg","d":16},{"w":1,"m":"ZvP","o":"niuben","d":13},{"w":0,"m":"ZvP","o":"32grr","d":-10},{"w":1,"m":"ZvZ","o":"GranDeVenti","d":11},{"w":1,"m":"ZvP","o":"llI!i!ilIi!lI::","d":4},{"w":0,"m":"ZvP","o":"ddaaaaaaa1ssz","d":-13}]},{"tier":"Sky","toon":"Electric[kS]","gateway":30,"rating":1725,"standing":10326,"cwalRace":"T","wins":3,"losses":3,"battleTag":"각성한전기쥐","mu":{},"recent":[{"w":0,"m":"TvT","o":"llIIlIIIllIlIll","d":-27},{"w":0,"m":"ZvT","o":"SlayerDi","d":-32},{"w":1,"m":"ZvT","o":"SlayerDi","d":90},{"w":0,"m":"ZvT","o":"Alexander_Isak","d":-30},{"w":1,"m":"TvT","o":"3050_JinHae","d":52},{"w":1,"m":"TvT","o":"osiris-","d":42}]},{"tier":"Red","toon":"Cliff[kS]","gateway":30,"rating":1724,"standing":10343,"cwalRace":"Z","wins":5,"losses":8,"battleTag":"에반정","mu":{"ZvP":[0,2],"ZvT":[2,2],"ZvZ":[2,0]},"recent":[{"w":0,"m":"ZvT","o":"ToBeHonor","d":-18},{"w":0,"m":"ZvP","o":"llIlIllIIIlIlll","d":-26},{"w":1,"m":"ZvT","o":"mulungmagic","d":32},{"w":1,"m":"ZvZ","o":"dictateur","d":31},{"w":0,"m":"ZvT","o":"U_GUARD","d":-36},{"w":0,"m":"ZvP","o":"WH-STEED","d":-52},{"w":1,"m":"ZvT","o":"ChoboMedic","d":72},{"w":1,"m":"ZvZ","o":"IlIlIlIl1lIllI1","d":50},{"w":0,"m":"ZvT","o":"Bestattack","d":-56},{"w":1,"m":"ZvZ","o":"bibiLi","d":60}]},{"tier":"Blue","toon":"SSS[kS]","gateway":30,"rating":1705,"standing":10892,"cwalRace":"T","wins":31,"losses":30,"battleTag":"서참취","mu":{"TvP":[9,6],"TvT":[5,5],"TvZ":[7,9]},"recent":[]},{"tier":"Sky","toon":"LIVRE[kS]","gateway":30,"rating":1702,"standing":10982,"cwalRace":"Z","wins":4,"losses":1,"battleTag":"까꿍이","mu":{},"recent":[{"w":1,"m":"ZvZ","o":"lllIIllIIIIlII","d":50},{"w":0,"m":"ZvP","o":"Showmaker.","d":-68},{"w":1,"m":"ZvZ","o":"sdfhuoisdhfuihs","d":44},{"w":1,"m":"ZvP","o":"lllllIIIIIll3","d":50},{"w":1,"m":"ZvP","o":"etherealfly","d":54}]},{"tier":"Sky","toon":"Pow[kS]","gateway":30,"rating":1695,"standing":11189,"cwalRace":"Z","wins":6,"losses":4,"battleTag":"도량동흑곰","mu":{},"recent":[]},{"tier":"Red","toon":"Tiki[kS)","gateway":10,"rating":1694,"standing":11203,"cwalRace":"Z","wins":2,"losses":3,"battleTag":"MoKa","mu":{},"recent":[]},{"tier":"Gold","toon":"Animal[kS]","gateway":30,"rating":1687,"standing":null,"cwalRace":"T","wins":2,"losses":3,"battleTag":"갓콩","mu":{"ZvP":[1,0],"ZvZ":[0,1]},"recent":[{"w":0,"m":"ZvT","o":"sbrthasgvaer","d":-16},{"w":0,"m":"ZvP","o":"IlIll1Ill1II","d":-66},{"w":0,"m":"ZvZ","o":"dronecake","d":-54},{"w":1,"m":"ZvP","o":"040101010","d":74},{"w":1,"m":"ZvP","o":"^_____^MU","d":60}]},{"tier":"Blue","toon":"neco[kS]","gateway":30,"rating":1686,"standing":11444,"cwalRace":"T","wins":38,"losses":43,"battleTag":"neco","mu":{"TvP":[12,12],"TvT":[2,12],"TvZ":[7,12]},"recent":[{"w":1,"m":"TvP","o":"JohnTurturro.","d":23},{"w":0,"m":"TvT","o":"J_sens","d":-14},{"w":1,"m":"TvP","o":"luckyBHA77","d":15},{"w":1,"m":"TvP","o":"CCZ-dadadadada","d":17},{"w":1,"m":"ZvT","o":"NanygNanygNaMoo","d":17},{"w":0,"m":"TvP","o":"banbanchickenn","d":-12},{"w":1,"m":"ZvT","o":"CCZ_DaMian","d":22},{"w":0,"m":"TvT","o":"lIIIlIIlIlllllI","d":-13},{"w":1,"m":"TvT","o":"HenSel","d":21},{"w":1,"m":"TvT","o":"HenSel","d":22}]},{"tier":"Violet","toon":"Palmer[kS]","gateway":30,"rating":1604,"standing":14085,"cwalRace":"Z","wins":27,"losses":35,"battleTag":"sAviOr","mu":{},"recent":[{"w":0,"m":"ZvP","o":"1GGUN","d":-19},{"w":1,"m":"PvP","o":"Nemesis10","d":13},{"w":1,"m":"ZvZ","o":"=='df3df3'.`de","d":15},{"w":0,"m":"ZvP","o":"lIlllIllIIIllIl","d":-31},{"w":0,"m":"ZvZ","o":"jjockjeb","d":-22},{"w":0,"m":"ZvT","o":"sunke188","d":-29},{"w":1,"m":"ZvP","o":"SLIIR","d":42},{"w":0,"m":"ZvZ","o":"lllIIlIllIIlII","d":-44},{"w":1,"m":"ZvT","o":"MOKSU_","d":40},{"w":1,"m":"ZvZ","o":"Sumon[ShJh]","d":68}]},{"tier":"Sky","toon":"exlar[ks]","gateway":30,"rating":1603,"standing":14110,"cwalRace":"T","wins":31,"losses":26,"battleTag":"고약한수도사","mu":{"TvP":[8,11],"TvT":[3,6],"TvZ":[5,4]},"recent":[{"w":1,"m":"TvP","o":"chairmanreach1","d":17},{"w":1,"m":"ZvT","o":"ac1234ac","d":15},{"w":1,"m":"ZvT","o":"AveeNoa","d":16},{"w":0,"m":"TvP","o":"IlIIIIlIlIIII11","d":-8},{"w":0,"m":"TvT","o":"IllIllII","d":-4},{"w":1,"m":"ZvT","o":"IIIIIIIIIIlllII","d":18},{"w":1,"m":"TvT","o":"BTC10000K$","d":10},{"w":1,"m":"TvT","o":"Black_Oseeun","d":2},{"w":0,"m":"TvT","o":"llIlIIIlIlIIIII","d":-6},{"w":1,"m":"TvT","o":"lllIIlllllI","d":18}]},{"tier":"White","toon":"colakim[kS]","gateway":30,"rating":1565,"standing":15505,"cwalRace":"T","wins":7,"losses":7,"battleTag":"cocacola23","mu":{},"recent":[]},{"tier":"Sky","toon":"Wls[kS]","gateway":30,"rating":1553,"standing":15933,"cwalRace":"Z","wins":2,"losses":7,"battleTag":"새로운주인","mu":{},"recent":[{"w":0,"m":"ZvP","o":"wwvwwwvwwwvwwwv","d":-17},{"w":0,"m":"ZvZ","o":"wwvwwwvwwwvwwwv","d":-19},{"w":1,"m":"ZvP","o":"curry11","d":58},{"w":0,"m":"ZvZ","o":"gegegege123","d":-42},{"w":1,"m":"ZvZ","o":"T0ssKiller^^","d":44},{"w":0,"m":"ZvP","o":"344534534341234","d":-68},{"w":0,"m":"ZvZ","o":"Vanderbilt","d":-38}]},{"tier":"Sky","toon":"gonjook[ks]","gateway":30,"rating":1531,"standing":16634,"cwalRace":"T","wins":74,"losses":74,"battleTag":"Real","mu":{"TvP":[10,20],"TvT":[7,16],"TvZ":[12,16]},"recent":[]},{"tier":"Blue","toon":"Eagles[kS]","gateway":30,"rating":1514,"standing":17241,"cwalRace":"Z","wins":1,"losses":4,"battleTag":"이글스","mu":{},"recent":[]},{"tier":"Sky","toon":"URSSU[kS]","gateway":30,"rating":1501,"standing":17694,"cwalRace":"T","wins":12,"losses":12,"battleTag":"김대호","mu":{},"recent":[]},{"tier":"Black","toon":"Paralyze[kS]","gateway":30,"rating":1464,"standing":18912,"cwalRace":"P","wins":3,"losses":17,"battleTag":"스타는내인생","mu":{"PvP":[0,1],"PvZ":[0,1]},"recent":[]},{"tier":"Sky","toon":"FAIRI[kS]","gateway":30,"rating":1368,"standing":21459,"cwalRace":"P","wins":5,"losses":7,"battleTag":"Kyul","mu":{"PvP":[1,2],"PvT":[1,3],"PvZ":[0,1]},"recent":[{"w":0,"m":"PvP","o":"Beelphegor","d":-31},{"w":0,"m":"ZvP","o":"CucaCula","d":-28},{"w":0,"m":"TvP","o":"skjsjsnsh762","d":-14},{"w":0,"m":"ZvP","o":"SoccerHongAgain","d":-30},{"w":0,"m":"TvP","o":"glausa","d":-25},{"w":1,"m":"TvP","o":"10CB_gaejang","d":40},{"w":1,"m":"ZvP","o":"|ROSE|","d":10},{"w":1,"m":"PvP","o":"likl43414iu31j4","d":50},{"w":1,"m":"PvP","o":"balanceswimming","d":64},{"w":0,"m":"PvP","o":"fa65777","d":-70}]},{"tier":"Black","toon":"5252[kS]","gateway":30,"rating":1317,"standing":23217,"cwalRace":"Z","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Sky","toon":"Heaven[kS]","gateway":30,"rating":1287,"standing":23784,"cwalRace":"P","wins":10,"losses":15,"battleTag":"헤븐","mu":{},"recent":[{"w":1,"m":"PvP","o":"lililiil!!lilli","d":15},{"w":0,"m":"PvP","o":"lllIInjs8590","d":-30},{"w":0,"m":"PvP","o":"lllIInjs8590","d":-33},{"w":0,"m":"PvP","o":"morningdew416","d":-22},{"w":0,"m":"PvP","o":"Sifrlol","d":-36},{"w":0,"m":"PvP","o":"PaulCroaker","d":-21},{"w":0,"m":"ZvP","o":"Miro_sky_:)","d":-16},{"w":0,"m":"ZvP","o":"S_63AMG_","d":-23},{"w":1,"m":"TvP","o":"sosok_)","d":18},{"w":1,"m":"PvP","o":"rewrw1","d":16}]},{"tier":"Sky","toon":"PhoeNix[kS]","gateway":30,"rating":1239,"standing":24776,"cwalRace":"T","wins":115,"losses":123,"battleTag":"불사조테란","mu":{"TvP":[10,18],"TvT":[10,4],"TvZ":[3,21]},"recent":[]},{"tier":"Gold","toon":"MuGwang[kS]","gateway":30,"rating":1194,"standing":25712,"cwalRace":"P","wins":0,"losses":17,"battleTag":"류재환","mu":{},"recent":[{"w":0,"m":"TvP","o":"ninano0327","d":-18},{"w":0,"m":"TvP","o":"talofaloha","d":-27},{"w":0,"m":"ZvP","o":"_SeolSi","d":-31},{"w":0,"m":"PvP","o":"Only_Zealot","d":-30},{"w":0,"m":"TvP","o":"32vawevfwe111","d":-36},{"w":0,"m":"TvP","o":"32vawevfwe111","d":-44},{"w":0,"m":"TvP","o":"32vawevfwe111","d":-52},{"w":0,"m":"ZvP","o":"aappear974411","d":-34},{"w":0,"m":"TvP","o":"mansk1515","d":-44},{"w":0,"m":"TvP","o":"=-==-=--9909-9","d":-32}]},{"tier":"Gold","toon":"ShaDOw[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Gold","toon":"One[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Yellow","toon":"sinsa[ks]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":3,"losses":0,"battleTag":"심따거","mu":{"ZvP":[1,0]},"recent":[{"w":1,"m":"ZvZ","o":"Doyle_","d":58},{"w":1,"m":"ZvZ","o":"Doyle_","d":64},{"w":1,"m":"ZvP","o":"Tetriss","d":50}]},{"tier":"Yellow","toon":"BW[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Yellow","toon":"DynamiC[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"Z","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Red","toon":"SuSaeng[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Violet","toon":"Blue[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":"","mu":{},"recent":[]},{"tier":"Sky","toon":"BOOM[KS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":1,"battleTag":"엉뚱한바지","mu":{"PvP":[0,1]},"recent":[{"w":0,"m":"PvP","o":"Sinhus[AKUTA]","d":-60}]}]};</script>
 
 <script>
 (function(){
@@ -285,6 +338,7 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
   R.slice().sort(function(a,b){return b.rating-a.rating;})
    .forEach(function(r,i){ r._rank = i+1; });
   R.forEach(function(r){
+    r._key = r.gateway + "|" + r.toon;
     var g = r.wins + r.losses;
     r._wr = g ? r.wins/g : 0;
     r._games = g;
@@ -302,11 +356,21 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
   document.getElementById("m-updated").textContent = D.updated + " 갱신";
 
   var sel = document.getElementById("tier");
-  sel.innerHTML = '<option value="">티어 전체</option>' + TIERS.map(function(t){
+  sel.innerHTML = '<option value="">클랜티어 전체</option>' + TIERS.map(function(t){
     return '<option value="'+t+'">'+t+'</option>';
   }).join("");
 
+  // 스크롤을 내려도 조작막대와 표 제목줄이 화면 위에 남아 있게 한다
+  var barEl = document.querySelector(".bar");
+  function fitBar(){
+    document.documentElement.style.setProperty("--barh", barEl.offsetHeight + "px");
+  }
+  fitBar();
+  window.addEventListener("resize", fitBar);
+  if (window.ResizeObserver) new ResizeObserver(fitBar).observe(barEl);
+
   var sortKey = "rating", sortDir = -1;
+  var open = {};                               // 펼쳐놓은 계정
 
   function draw(){
     var q    = document.getElementById("q").value.trim().toLowerCase();
@@ -338,24 +402,24 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     }
 
     document.getElementById("tb").innerHTML = list.map(function(r){
-      var url = "https://cwal.gg/profile/" + r.gateway + "/" + encodeURIComponent(r.toon);
-      var wr  = Math.round(r._wr * 100);
+      var wr = Math.round(r._wr * 100);
 
-      // 휴대폰에서는 종족·전적 열이 숨으니 계정 아랫줄에 같이 적어준다
-      var mobi = (r.battleTag ? " · " : "")
-               + (RACE_KO[r.cwalRace] || r.cwalRace || "")
-               + (r._games ? " " + r.wins + "승 " + r.losses + "패" : "");
+      // 휴대폰에서는 종족·전적 열이 숨으니 계정 밑에 한 줄로 붙여준다
+      var line2 = (RACE_KO[r.cwalRace] || r.cwalRace || "")
+                + (r._games ? " " + r.wins + "승 " + r.losses + "패 " + wr + "%" : "")
+                + (r.battleTag ? " · " + r.battleTag : "");
 
-      return '<tr' + (r._rank <= 3 ? ' class="top"' : '') + '>'
+      var cls = (r._rank <= 3 ? ' top' : '') + (open[r._key] ? ' open' : '');
+
+      return '<tr' + (cls ? ' class="' + cls.trim() + '"' : '') + '>'
         + '<td class="rk">' + r._rank + '</td>'
-        + '<td><span class="toon"><a href="' + url + '" target="_blank" rel="noopener">'
-          + esc(r.toon) + '</a>'
+        + '<td><span class="toon">'
+          + '<button class="nm" data-key="' + esc(r._key) + '">' + esc(r.toon) + '</button>'
           + (r.battleTag ? '<span class="bt">' + esc(r.battleTag) + '</span>' : '')
-          + '<span class="mobi">' + esc(mobi) + '</span>'
+          + '<span class="line2">' + esc(line2) + '</span>'
           + '</span></td>'
-        + '<td>' + (r.tier
-            ? '<span class="tier" style="background:' + tierVar(r.tier) + '">' + esc(r.tier) + '</span>'
-            : '<span class="dash">-</span>') + '</td>'
+        + '<td><span class="tier" style="background:' + tierVar(r.tier) + '">'
+          + esc(r.tier) + '</span></td>'
         + '<td class="col-race"><span class="race" style="color:var(--r-' + esc(r.cwalRace || "T") + ')">'
           + esc(RACE_KO[r.cwalRace] || r.cwalRace || "-") + '</span></td>'
         + '<td class="num"><div class="mmr">' + r.rating.toLocaleString() + '</div>'
@@ -365,8 +429,43 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
           + (r._games ? '  ' + wr + '%' : '') + '</span>'
           + '<span class="track"><span class="fill' + (wr < 50 ? ' lo' : '') + '" style="width:'
           + (r._games ? wr : 0) + '%"></span></span></div></td>'
-        + '</tr>';
+        + '</tr>'
+        + (open[r._key] ? detailRow(r) : '');
     }).join("");
+  }
+
+  // 계정을 누르면 펼쳐지는 칸 — 종족별 전적과 최근 10전
+  function detailRow(r){
+    var mu = r.mu || {}, keys = Object.keys(mu).sort();
+    var left = keys.length ? keys.map(function(k){
+      var w = mu[k][0], l = mu[k][1], g = w + l;
+      var pc = g ? Math.round(w / g * 100) : 0;
+      var vs = k.charAt(k.length - 1);
+      return '<div class="mu">'
+           + '<span class="k" style="color:var(--r-' + (RACE_KO[vs] ? vs : "T") + ')">' + esc(k) + '</span>'
+           + '<span class="track"><span class="fill' + (pc < 50 ? ' lo' : '') + '" style="width:' + pc + '%"></span></span>'
+           + '<span class="n">' + w + '-' + l + ' &middot; ' + pc + '%</span>'
+           + '</div>';
+    }).join("") : '<div class="none">기록이 없습니다.</div>';
+
+    var rec = r.recent || [];
+    var right = rec.length ? rec.map(function(m){
+      var d = m.d || 0;
+      return '<div class="g">'
+           + '<span class="r' + (m.w ? '' : ' l') + '">' + (m.w ? 'W' : 'L') + '</span>'
+           + '<span class="vs">' + esc(m.m || '') + '</span>'
+           + '<span class="op">' + esc(m.o || '') + '</span>'
+           + '<span class="d' + (d < 0 ? ' m' : '') + '">' + (d > 0 ? '+' : '') + d + '</span>'
+           + '</div>';
+    }).join("") : '<div class="none">최근 경기 기록이 없습니다.</div>';
+
+    var won = rec.filter(function(m){ return m.w; }).length;
+    return '<tr class="det"><td colspan="6"><div class="det-in">'
+         + '<div class="box"><h3>종족별 전적</h3>' + left + '</div>'
+         + '<div class="box"><h3>최근 ' + rec.length + '전'
+           + (rec.length ? ' &middot; ' + won + '승 ' + (rec.length - won) + '패' : '') + '</h3>'
+           + right + '</div>'
+         + '</div></td></tr>';
   }
 
   ["q","race"].forEach(function(id){
@@ -386,20 +485,40 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     });
   });
 
+  var tb = document.getElementById("tb");
+
+  tb.addEventListener("click", function(e){
+    var b = e.target.closest("button.nm");
+    if (!b) return;
+    var k = b.dataset.key;
+    if (open[k]) delete open[k]; else open[k] = 1;
+    draw();
+  });
+
   draw();
 
-  // ── 래더 아이디 추가 (이 브라우저에만 저장됨) ──
+  // ── 래더 아이디 등록요청 ──
+  // [등록요청] 을 누르면 화면 뒤에서 구글폼에 조용히 제출된다.
+  // 신청자는 폼 화면을 볼 일이 없다. 쌓인 내용은 구글시트에 들어가고,
+  // 매일 밤 갱신기가 그 시트를 읽어 명단에 합친다.
+  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeVYyzMDcQDs8yQe5q0qjwC15HKCRerurWzlCZokYzbEbm-7w/formResponse";
+  var F = { id:"entry.369104941", toon:"entry.966346034", tier:"entry.1216524568" };
   var KEY = "ks-ladder-ids", pend = [];
   try { pend = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e) { pend = []; }
+
+  var tierSel = document.getElementById("a-tier");
+  tierSel.innerHTML = '<option value="">클랜티어</option>' + TIERS.map(function(t){
+    return '<option value="' + t + '">' + t + '</option>';
+  }).join("");
 
   var listEl = document.getElementById("a-list");
   var toastEl = document.getElementById("a-toast");
   var timer;
 
-  function say(msg){
+  function say(msg, ms){
     toastEl.textContent = msg;
     clearTimeout(timer);
-    timer = setTimeout(function(){ toastEl.textContent = ""; }, 2400);
+    timer = setTimeout(function(){ toastEl.textContent = ""; }, ms || 2400);
   }
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(pend)); } catch(e) {}
@@ -408,21 +527,61 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     listEl.innerHTML = pend.map(function(p, i){
       return '<div class="pend"><span>' + esc(p.id) + '</span>'
            + '<span class="arrow">&rarr;</span><span>' + esc(p.toon) + '</span>'
+           + (p.tier ? '<span class="tier" style="background:' + tierVar(p.tier) + '">'
+                     + esc(p.tier) + '</span>' : '')
            + '<button class="x" data-i="' + i + '" title="지우기">&times;</button></div>';
     }).join("");
   }
-  drawPend();
+  if (FORM){
+    listEl.style.display = "none";
+    document.getElementById("a-copy").style.display = "none";
+    document.getElementById("a-clear").style.display = "none";
+  } else {
+    drawPend();
+  }
 
-  document.getElementById("a-btn").addEventListener("click", function(){
-    var id = document.getElementById("a-id").value.trim();
-    var toon = document.getElementById("a-toon").value.trim();
-    if (!id || !toon){ say("두 칸을 모두 채워주세요."); return; }
-    pend.push({id:id, toon:toon});
-    save(); drawPend();
+  var btn = document.getElementById("a-btn");
+
+  function clearRow(){
     document.getElementById("a-id").value = "";
     document.getElementById("a-toon").value = "";
+    tierSel.value = "";
     document.getElementById("a-id").focus();
-    say("추가했습니다.");
+  }
+
+  btn.addEventListener("click", function(){
+    var id = document.getElementById("a-id").value.trim();
+    var toon = document.getElementById("a-toon").value.trim();
+    var tier = tierSel.value;
+    if (!id || !toon || !tier){ say("세 칸을 모두 채워주세요."); return; }
+
+    // 접수처가 없으면 예전처럼 이 브라우저에 적어둔다
+    if (!FORM){
+      pend.push({id:id, toon:toon, tier:tier});
+      save(); drawPend(); clearRow();
+      say("추가했습니다.");
+      return;
+    }
+
+    btn.disabled = true;
+    say("보내는 중…", 15000);
+
+    var fd = new FormData();
+    fd.append(F.id, id);
+    fd.append(F.toon, toon);
+    fd.append(F.tier, tier);
+
+    // 구글폼은 받기만 하고 답을 안 준다 (no-cors).
+    // 그래서 보내지기만 하면 접수된 것으로 본다.
+    fetch(FORM, { method:"POST", mode:"no-cors", body: fd }).then(function(){
+      btn.disabled = false;
+      clearRow();
+      say("요청 완료! " + toon + " · 순위 반영은 매일 자정에 이뤄집니다. "
+          + "(cwal 에 없는 계정은 올라오지 않습니다)", 9000);
+    }).catch(function(){
+      btn.disabled = false;
+      say("지금은 접수가 안 됩니다. 잠시 뒤 다시 눌러주세요.", 7000);
+    });
   });
 
   listEl.addEventListener("click", function(e){
@@ -434,7 +593,9 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
 
   document.getElementById("a-copy").addEventListener("click", function(){
     if (!pend.length){ say("추가한 게 없습니다."); return; }
-    var text = pend.map(function(p){ return p.id + "\t" + p.toon; }).join("\n");
+    var text = pend.map(function(p){
+      return p.id + "\t" + p.toon + "\t" + (p.tier || "");
+    }).join("\n");
     var ta = document.createElement("textarea");
     ta.value = text;
     ta.style.position = "fixed";

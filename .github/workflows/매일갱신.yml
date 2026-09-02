@@ -1,0 +1,47 @@
+# 매일 밤 자동으로 순위를 갱신하는 설정 파일
+#
+# 하는 일
+#   1) 이 저장소를 깃허브 서버에 내려받는다
+#   2) 갱신.py 를 돌린다 (등록요청 시트 읽기 + cwal.gg 수집 + index.html 만들기)
+#   3) 바뀐 index.html 과 명단.json 을 이 저장소에 되돌려 저장한다
+#      → 저장되는 순간 홈페이지에 반영된다
+#
+# 내 컴퓨터가 꺼져 있어도 깃허브가 대신 돌려준다.
+
+name: 매일 자정 5분 전 갱신
+
+on:
+  schedule:
+    # 세계표준시 14:55 = 한국시간 23:55
+    # (깃허브가 바쁘면 몇 분 늦게 시작할 수 있다)
+    - cron: '55 14 * * *'
+  workflow_dispatch:        # 깃허브 화면의 버튼으로 아무 때나 돌릴 수도 있다
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # 결과를 이 저장소에 되돌려 저장할 권한
+
+    steps:
+      - name: 갱신기 내려받기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 갱신기 돌리기
+        env:
+          KS_PUB: index.html    # 공개용 페이지를 저장소 맨 위에 바로 만든다
+        run: python 갱신.py
+
+      - name: 홈페이지에 반영
+        run: |
+          git config user.name  "ks-ladder-bot"
+          git config user.email "ks-ladder-bot@users.noreply.github.com"
+          git add index.html 명단.json
+          git diff --cached --quiet && echo "바뀐 게 없습니다" && exit 0
+          git commit -m "순위 자동 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+          git push

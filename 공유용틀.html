@@ -1,0 +1,606 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#eef0f4;
+  --panel:#ffffff;
+  --panel-2:#f6f7fa;
+  --line:#d5d9e2;
+  --line-soft:#e5e8ef;
+  --ink:#1b2030;
+  --ink-2:#4d5568;
+  --ink-3:#7c8496;
+  --accent:#2f6bb5;
+  --accent-soft:rgba(47,107,181,.10);
+  --good:#2f8f5b;
+  --bad:#c0503f;
+  --t-Black:#565d6e;  --t-Gold:#b2862a;   --t-Yellow:#9a8c1f;
+  --t-Red:#c0503f;    --t-Violet:#7a5cc4; --t-Blue:#3a78c8;
+  --t-Sky:#2b93ab;    --t-White:#7b8496;  --t-none:#8b93a4;
+  --r-T:#3a78c8; --r-P:#b2862a; --r-Z:#8b5cc0;
+  --shadow:0 1px 2px rgba(20,26,40,.06), 0 8px 24px -16px rgba(20,26,40,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#12151d;
+    --panel:#1a1e28;
+    --panel-2:#20252f;
+    --line:#2e3542;
+    --line-soft:#262c37;
+    --ink:#e6e9f0;
+    --ink-2:#a8b0c0;
+    --ink-3:#78808f;
+    --accent:#6fa4e8;
+    --accent-soft:rgba(111,164,232,.13);
+    --good:#5cbf8a;
+    --bad:#e07a68;
+    --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
+    --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
+    --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
+    --r-T:#6fa4e8; --r-P:#e0b155; --r-Z:#a98ee6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#12151d;
+  --panel:#1a1e28;
+  --panel-2:#20252f;
+  --line:#2e3542;
+  --line-soft:#262c37;
+  --ink:#e6e9f0;
+  --ink-2:#a8b0c0;
+  --ink-3:#78808f;
+  --accent:#6fa4e8;
+  --accent-soft:rgba(111,164,232,.13);
+  --good:#5cbf8a;
+  --bad:#e07a68;
+  --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
+  --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
+  --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
+  --r-T:#6fa4e8; --r-P:#e0b155; --r-Z:#a98ee6;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:940px;margin:0 auto;padding:32px 20px 64px;display:flex;flex-direction:column;gap:20px}
+
+/* ── 머리말 ── */
+.head{display:flex;flex-direction:column;gap:6px}
+.eyebrow{
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+}
+h1{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;
+  font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.1;
+  margin:0;text-wrap:balance;letter-spacing:-.01em;
+}
+.sub{color:var(--ink-3);font-size:13px;margin:0;font-variant-numeric:tabular-nums}
+
+/* ── 조작 막대 ── */
+.bar{
+  position:sticky;top:0;z-index:5;
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  box-shadow:var(--shadow);
+}
+input,select,button{font-family:inherit;font-size:14px;color:var(--ink)}
+input,select{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:8px 10px;
+}
+input[type=search]{flex:1 1 220px;min-width:0}
+input::placeholder{color:var(--ink-3)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ── 표 ── */
+.tablewrap{
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  overflow:clip;box-shadow:var(--shadow);
+}
+table{border-collapse:collapse;width:100%}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line-soft)}
+thead th{
+  position:sticky;top:var(--barh,52px);z-index:4;background:var(--panel-2);
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+thead th.s{cursor:pointer}
+thead th.s:hover{color:var(--ink)}
+thead th.on{color:var(--accent)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--accent-soft)}
+.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+
+.rk{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--ink-3);width:52px;text-align:right;font-size:13px;
+}
+tr.top .rk{color:var(--accent);font-weight:600;font-size:15px}
+
+.toon{display:flex;flex-direction:column;gap:1px;align-items:flex-start}
+.toon .nm{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;font-size:15px;
+  color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left;
+}
+.toon .nm:hover{color:var(--accent)}
+.toon .nm::after{content:"be";font-size:10px;color:var(--ink-3);margin-left:5px}
+tr.open .nm{color:var(--accent)}
+tr.open .nm::after{content:"b4"}
+.toon .bt{font-size:12px;color:var(--ink-3)}
+.toon .line2{display:none}
+
+.tier{
+  display:inline-block;font-family:"Chakra Petch",sans-serif;font-weight:600;
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 8px;border-radius:2px;color:#fff;white-space:nowrap;
+}
+.dash{color:var(--ink-3)}
+.race{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:14px}
+
+.mmr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+.standing{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+.wl{display:flex;flex-direction:column;gap:3px;min-width:98px}
+.wl .t{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.wl .track{height:4px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+.wl .fill{height:100%;background:var(--good)}
+.wl .fill.lo{background:var(--bad)}
+.empty{padding:40px 16px;text-align:center;color:var(--ink-3)}
+
+/* ── 계정을 누르면 펼쳐지는 칸 ── */
+tr.det td{background:var(--panel-2);padding:14px 16px}
+tr.det:hover td{background:var(--panel-2)}
+.det-in{display:flex;flex-wrap:wrap;gap:10px 28px}
+.box{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.box h3{
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0;
+}
+.mu{display:flex;align-items:center;gap:8px;font-size:12px}
+.mu .k{font-family:"IBM Plex Mono",monospace;font-weight:600;width:36px;flex:none}
+.mu .track{flex:1 1 auto;height:5px;background:var(--line-soft);border-radius:3px;overflow:hidden}
+.mu .fill{height:100%;background:var(--good)}
+.mu .fill.lo{background:var(--bad)}
+.mu .n{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--ink-2);white-space:nowrap;flex:none;
+}
+.g{display:flex;align-items:center;gap:8px;font-size:12px}
+.g .r{
+  flex:none;width:17px;height:17px;border-radius:2px;background:var(--good);color:#fff;
+  font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:10px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.g .r.l{background:var(--bad)}
+.g .vs{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);flex:none;width:34px}
+.g .op{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+.g .d{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--good);flex:none;
+}
+.g .d.m{color:var(--bad)}
+.none{font-size:12px;color:var(--ink-3)}
+
+/* ── 아이디 추가 ── */
+.add{
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
+}
+.add h2{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;
+  font-size:15px;margin:0;letter-spacing:.01em;
+}
+.addrow{display:flex;flex-wrap:wrap;gap:8px}
+.addrow input{flex:1 1 180px;min-width:0}
+button{
+  background:var(--accent);border:1px solid var(--accent);color:#fff;
+  border-radius:3px;padding:8px 16px;cursor:pointer;font-weight:500;
+}
+button:hover{filter:brightness(1.08)}
+button.ghost{background:transparent;border-color:var(--line);color:var(--ink-2)}
+button.ghost:hover{border-color:var(--accent);color:var(--accent);filter:none}
+.pending{display:flex;flex-direction:column;gap:6px}
+.pend{
+  display:flex;align-items:center;gap:10px;padding:7px 10px;
+  background:var(--panel-2);border:1px solid var(--line-soft);border-radius:3px;
+  font-family:"IBM Plex Mono",monospace;font-size:13px;
+}
+.pend .arrow{color:var(--ink-3)}
+.pend .x{
+  margin-left:auto;background:none;border:none;color:var(--ink-3);
+  cursor:pointer;font-size:16px;line-height:1;padding:0 4px;
+}
+.pend .x:hover{color:var(--bad);filter:none}
+.addfoot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--ink-3);margin:0}
+.toast{font-size:13px;color:var(--good)}
+footer{color:var(--ink-3);font-size:12px;text-align:center}
+
+/* ── 휴대폰 ── */
+@media (max-width:640px){
+  .wrap{padding:18px 10px 40px;gap:12px}
+  body{font-size:14px}
+  th,td{padding:8px 6px}
+  .col-race,.col-wl{display:none}
+
+  /* 칸 너비를 못박아 두어야 계정 밑줄이 한 줄로 잘린다 */
+  table{table-layout:fixed;width:100%}
+  .rk{width:30px;padding-right:3px;font-size:12px}
+  th:nth-child(3){width:58px}
+  th:nth-child(5){width:70px}
+
+  .toon{display:block;max-width:100%}
+  .toon .nm{font-size:13px}
+  .toon .bt{display:none}
+  .toon .line2{
+    display:block;width:100%;font-size:11px;color:var(--ink-3);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .standing{display:none}
+  .mmr{font-size:14px}
+  .tier{font-size:9px;padding:2px 5px;letter-spacing:.03em}
+  .bar{padding:9px}
+  thead th{font-size:10px;letter-spacing:.04em}
+  tr.det td{padding:12px 10px}
+  .det-in{gap:14px}
+  .g,.mu{font-size:11px}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <div class="eyebrow">cwal.gg 래더 기준</div>
+    <h1>ks clan 래더 순위</h1>
+    <p class="sub" id="m-updated"></p>
+  </header>
+
+  <section class="add">
+    <h2>래더 아이디 등록요청</h2>
+    <p class="hint">순위에 안 보이는 클랜원은 여기에 적고 <b>등록요청</b> 을 누르세요.
+      계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
+      <b>반영은 매일 자정</b>에 한 번 이뤄집니다.</p>
+    <div class="addrow">
+      <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
+      <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
+      <select id="a-tier"></select>
+      <button id="a-btn">등록요청</button>
+    </div>
+    <div class="pending" id="a-list"></div>
+    <div class="addfoot">
+      <button class="ghost" id="a-copy">전체 복사</button>
+      <button class="ghost" id="a-clear">비우기</button>
+      <span class="toast" id="a-toast"></span>
+    </div>
+  </section>
+
+  <div class="bar">
+    <input type="search" id="q" placeholder="계정 · 배틀태그 검색" autocomplete="off">
+    <select id="tier"></select>
+    <select id="race">
+      <option value="">종족 전체</option>
+      <option value="T">테란</option>
+      <option value="P">프로토스</option>
+      <option value="Z">저그</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="rk">#</th>
+          <th class="s" data-k="toon">계정</th>
+          <th class="s" data-k="tier">클랜티어</th>
+          <th class="s col-race" data-k="cwalRace">종족</th>
+          <th class="s on" data-k="rating">MMR</th>
+          <th class="s col-wl" data-k="winrate">승패</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+
+  <footer>cwal.gg 공개 데이터</footer>
+</div>
+
+<!--__KS_DATA__-->
+
+<script>
+(function(){
+  var D = window.KS_DATA, R = D.rows;
+  var TIERS = ["Black","Gold","Yellow","Red","Violet","Blue","Sky","White"];
+  var RACE_KO = {T:"테란", P:"프로토스", Z:"저그"};
+
+  // 순위는 MMR 순서로 한 번만 매겨두고, 정렬을 바꿔도 그대로 쓴다
+  R.slice().sort(function(a,b){return b.rating-a.rating;})
+   .forEach(function(r,i){ r._rank = i+1; });
+  R.forEach(function(r){
+    r._key = r.gateway + "|" + r.toon;
+    var g = r.wins + r.losses;
+    r._wr = g ? r.wins/g : 0;
+    r._games = g;
+    r.winrate = r._wr;
+    r._hay = ((r.id||"") + " " + r.toon + " " + (r.battleTag||"")).toLowerCase();
+  });
+
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"]/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+    });
+  }
+  function tierVar(t){ return TIERS.indexOf(t)>=0 ? "var(--t-"+t+")" : "var(--t-none)"; }
+
+  document.getElementById("m-updated").textContent = D.updated + " 갱신";
+
+  var sel = document.getElementById("tier");
+  sel.innerHTML = '<option value="">클랜티어 전체</option>' + TIERS.map(function(t){
+    return '<option value="'+t+'">'+t+'</option>';
+  }).join("");
+
+  // 스크롤을 내려도 조작막대와 표 제목줄이 화면 위에 남아 있게 한다
+  var barEl = document.querySelector(".bar");
+  function fitBar(){
+    document.documentElement.style.setProperty("--barh", barEl.offsetHeight + "px");
+  }
+  fitBar();
+  window.addEventListener("resize", fitBar);
+  if (window.ResizeObserver) new ResizeObserver(fitBar).observe(barEl);
+
+  var sortKey = "rating", sortDir = -1;
+  var open = {};                               // 펼쳐놓은 계정
+
+  function draw(){
+    var q    = document.getElementById("q").value.trim().toLowerCase();
+    var tier = sel.value;
+    var race = document.getElementById("race").value;
+
+    var list = R.filter(function(r){
+      if (q && r._hay.indexOf(q) < 0) return false;
+      if (tier && r.tier !== tier) return false;
+      if (race && r.cwalRace !== race) return false;
+      return true;
+    });
+
+    list.sort(function(a,b){
+      var x = a[sortKey], y = b[sortKey];
+      if (typeof x === "string" || typeof y === "string"){
+        x = String(x||"").toLowerCase(); y = String(y||"").toLowerCase();
+        return x < y ? sortDir : x > y ? -sortDir : 0;
+      }
+      return ((x||0) - (y||0)) * sortDir;
+    });
+
+    document.getElementById("count").textContent = list.length + " / " + R.length + " 계정";
+
+    if (!list.length){
+      document.getElementById("tb").innerHTML =
+        '<tr><td colspan="6" class="empty">조건에 맞는 계정이 없습니다.</td></tr>';
+      return;
+    }
+
+    document.getElementById("tb").innerHTML = list.map(function(r){
+      var wr = Math.round(r._wr * 100);
+
+      // 휴대폰에서는 종족·전적 열이 숨으니 계정 밑에 한 줄로 붙여준다
+      var line2 = (RACE_KO[r.cwalRace] || r.cwalRace || "")
+                + (r._games ? " " + r.wins + "승 " + r.losses + "패 " + wr + "%" : "")
+                + (r.battleTag ? " · " + r.battleTag : "");
+
+      var cls = (r._rank <= 3 ? ' top' : '') + (open[r._key] ? ' open' : '');
+
+      return '<tr' + (cls ? ' class="' + cls.trim() + '"' : '') + '>'
+        + '<td class="rk">' + r._rank + '</td>'
+        + '<td><span class="toon">'
+          + '<button class="nm" data-key="' + esc(r._key) + '">' + esc(r.toon) + '</button>'
+          + (r.battleTag ? '<span class="bt">' + esc(r.battleTag) + '</span>' : '')
+          + '<span class="line2">' + esc(line2) + '</span>'
+          + '</span></td>'
+        + '<td><span class="tier" style="background:' + tierVar(r.tier) + '">'
+          + esc(r.tier) + '</span></td>'
+        + '<td class="col-race"><span class="race" style="color:var(--r-' + esc(r.cwalRace || "T") + ')">'
+          + esc(RACE_KO[r.cwalRace] || r.cwalRace || "-") + '</span></td>'
+        + '<td class="num"><div class="mmr">' + r.rating.toLocaleString() + '</div>'
+          + (r.standing ? '<div class="standing">전체 ' + r.standing.toLocaleString() + '위</div>' : '')
+          + '</td>'
+        + '<td class="col-wl"><div class="wl"><span class="t">' + r.wins + '승 ' + r.losses + '패'
+          + (r._games ? '  ' + wr + '%' : '') + '</span>'
+          + '<span class="track"><span class="fill' + (wr < 50 ? ' lo' : '') + '" style="width:'
+          + (r._games ? wr : 0) + '%"></span></span></div></td>'
+        + '</tr>'
+        + (open[r._key] ? detailRow(r) : '');
+    }).join("");
+  }
+
+  // 계정을 누르면 펼쳐지는 칸 — 종족별 전적과 최근 10전
+  function detailRow(r){
+    var mu = r.mu || {}, keys = Object.keys(mu).sort();
+    var left = keys.length ? keys.map(function(k){
+      var w = mu[k][0], l = mu[k][1], g = w + l;
+      var pc = g ? Math.round(w / g * 100) : 0;
+      var vs = k.charAt(k.length - 1);
+      return '<div class="mu">'
+           + '<span class="k" style="color:var(--r-' + (RACE_KO[vs] ? vs : "T") + ')">' + esc(k) + '</span>'
+           + '<span class="track"><span class="fill' + (pc < 50 ? ' lo' : '') + '" style="width:' + pc + '%"></span></span>'
+           + '<span class="n">' + w + '-' + l + ' &middot; ' + pc + '%</span>'
+           + '</div>';
+    }).join("") : '<div class="none">기록이 없습니다.</div>';
+
+    var rec = r.recent || [];
+    var right = rec.length ? rec.map(function(m){
+      var d = m.d || 0;
+      return '<div class="g">'
+           + '<span class="r' + (m.w ? '' : ' l') + '">' + (m.w ? 'W' : 'L') + '</span>'
+           + '<span class="vs">' + esc(m.m || '') + '</span>'
+           + '<span class="op">' + esc(m.o || '') + '</span>'
+           + '<span class="d' + (d < 0 ? ' m' : '') + '">' + (d > 0 ? '+' : '') + d + '</span>'
+           + '</div>';
+    }).join("") : '<div class="none">최근 경기 기록이 없습니다.</div>';
+
+    var won = rec.filter(function(m){ return m.w; }).length;
+    return '<tr class="det"><td colspan="6"><div class="det-in">'
+         + '<div class="box"><h3>종족별 전적</h3>' + left + '</div>'
+         + '<div class="box"><h3>최근 ' + rec.length + '전'
+           + (rec.length ? ' &middot; ' + won + '승 ' + (rec.length - won) + '패' : '') + '</h3>'
+           + right + '</div>'
+         + '</div></td></tr>';
+  }
+
+  ["q","race"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", draw);
+  });
+  sel.addEventListener("input", draw);
+
+  Array.prototype.forEach.call(document.querySelectorAll("th.s"), function(th){
+    th.addEventListener("click", function(){
+      var k = th.dataset.k;
+      if (sortKey === k) sortDir = -sortDir;
+      else { sortKey = k; sortDir = (k === "toon" || k === "tier") ? 1 : -1; }
+      Array.prototype.forEach.call(document.querySelectorAll("th.s"), function(o){
+        o.classList.toggle("on", o === th);
+      });
+      draw();
+    });
+  });
+
+  var tb = document.getElementById("tb");
+
+  tb.addEventListener("click", function(e){
+    var b = e.target.closest("button.nm");
+    if (!b) return;
+    var k = b.dataset.key;
+    if (open[k]) delete open[k]; else open[k] = 1;
+    draw();
+  });
+
+  draw();
+
+  // ── 래더 아이디 등록요청 ──
+  // [등록요청] 을 누르면 화면 뒤에서 구글폼에 조용히 제출된다.
+  // 신청자는 폼 화면을 볼 일이 없다. 쌓인 내용은 구글시트에 들어가고,
+  // 매일 밤 갱신기가 그 시트를 읽어 명단에 합친다.
+  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSeVYyzMDcQDs8yQe5q0qjwC15HKCRerurWzlCZokYzbEbm-7w/formResponse";
+  var F = { id:"entry.369104941", toon:"entry.966346034", tier:"entry.1216524568" };
+  var KEY = "ks-ladder-ids", pend = [];
+  try { pend = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e) { pend = []; }
+
+  var tierSel = document.getElementById("a-tier");
+  tierSel.innerHTML = '<option value="">클랜티어</option>' + TIERS.map(function(t){
+    return '<option value="' + t + '">' + t + '</option>';
+  }).join("");
+
+  var listEl = document.getElementById("a-list");
+  var toastEl = document.getElementById("a-toast");
+  var timer;
+
+  function say(msg, ms){
+    toastEl.textContent = msg;
+    clearTimeout(timer);
+    timer = setTimeout(function(){ toastEl.textContent = ""; }, ms || 2400);
+  }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(pend)); } catch(e) {}
+  }
+  function drawPend(){
+    listEl.innerHTML = pend.map(function(p, i){
+      return '<div class="pend"><span>' + esc(p.id) + '</span>'
+           + '<span class="arrow">&rarr;</span><span>' + esc(p.toon) + '</span>'
+           + (p.tier ? '<span class="tier" style="background:' + tierVar(p.tier) + '">'
+                     + esc(p.tier) + '</span>' : '')
+           + '<button class="x" data-i="' + i + '" title="지우기">&times;</button></div>';
+    }).join("");
+  }
+  if (FORM){
+    listEl.style.display = "none";
+    document.getElementById("a-copy").style.display = "none";
+    document.getElementById("a-clear").style.display = "none";
+  } else {
+    drawPend();
+  }
+
+  var btn = document.getElementById("a-btn");
+
+  function clearRow(){
+    document.getElementById("a-id").value = "";
+    document.getElementById("a-toon").value = "";
+    tierSel.value = "";
+    document.getElementById("a-id").focus();
+  }
+
+  btn.addEventListener("click", function(){
+    var id = document.getElementById("a-id").value.trim();
+    var toon = document.getElementById("a-toon").value.trim();
+    var tier = tierSel.value;
+    if (!id || !toon || !tier){ say("세 칸을 모두 채워주세요."); return; }
+
+    // 접수처가 없으면 예전처럼 이 브라우저에 적어둔다
+    if (!FORM){
+      pend.push({id:id, toon:toon, tier:tier});
+      save(); drawPend(); clearRow();
+      say("추가했습니다.");
+      return;
+    }
+
+    btn.disabled = true;
+    say("보내는 중…", 15000);
+
+    var fd = new FormData();
+    fd.append(F.id, id);
+    fd.append(F.toon, toon);
+    fd.append(F.tier, tier);
+
+    // 구글폼은 받기만 하고 답을 안 준다 (no-cors).
+    // 그래서 보내지기만 하면 접수된 것으로 본다.
+    fetch(FORM, { method:"POST", mode:"no-cors", body: fd }).then(function(){
+      btn.disabled = false;
+      clearRow();
+      say("요청 완료! " + toon + " · 순위 반영은 매일 자정에 이뤄집니다. "
+          + "(cwal 에 없는 계정은 올라오지 않습니다)", 9000);
+    }).catch(function(){
+      btn.disabled = false;
+      say("지금은 접수가 안 됩니다. 잠시 뒤 다시 눌러주세요.", 7000);
+    });
+  });
+
+  listEl.addEventListener("click", function(e){
+    var b = e.target.closest("button.x");
+    if (!b) return;
+    pend.splice(+b.dataset.i, 1);
+    save(); drawPend();
+  });
+
+  document.getElementById("a-copy").addEventListener("click", function(){
+    if (!pend.length){ say("추가한 게 없습니다."); return; }
+    var text = pend.map(function(p){
+      return p.id + "\t" + p.toon + "\t" + (p.tier || "");
+    }).join("\n");
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); say("복사했습니다. 붙여넣어 전달해 주세요."); }
+    catch(err) { say("복사가 안 되면 직접 긁어서 복사해 주세요."); }
+    document.body.removeChild(ta);
+  });
+
+  document.getElementById("a-clear").addEventListener("click", function(){
+    pend = []; save(); drawPend(); say("비웠습니다.");
+  });
+})();
+</script>
