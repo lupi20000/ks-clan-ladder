@@ -194,15 +194,20 @@ tr.det:hover td{background:var(--panel-2)}
 .g .d.m{color:var(--bad)}
 .none{font-size:12px;color:var(--ink-3)}
 
-/* ── 아이디 추가 ── */
+/* ── 아이디 등록요청 (한 줄로 접어두고, 누르면 펼쳐진다) ── */
 .add{
   background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
-  padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
+  padding:9px 14px;box-shadow:var(--shadow);
 }
-.add h2{
-  font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;
-  font-size:15px;margin:0;letter-spacing:.01em;
+.add > summary{
+  cursor:pointer;font-size:12px;color:var(--ink-3);
+  display:flex;align-items:center;gap:6px;list-style:none;
 }
+.add > summary::-webkit-details-marker{display:none}
+.add > summary::before{content:"+";font-size:12px;line-height:1}
+.add[open] > summary::before{content:"−"}
+.add > summary:hover{color:var(--accent)}
+.addbody{display:flex;flex-direction:column;gap:12px;padding-top:12px}
 .addrow{display:flex;flex-wrap:wrap;gap:8px}
 .addrow input{flex:1 1 180px;min-width:0}
 button{
@@ -268,24 +273,26 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     <p class="sub" id="m-updated"></p>
   </header>
 
-  <section class="add">
-    <h2>래더 아이디 등록요청</h2>
-    <p class="hint">순위에 안 보이는 클랜원은 여기에 적고 <b>등록요청</b> 을 누르세요.
-      계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
-      <b>반영은 매일 자정</b>에 한 번 이뤄집니다.</p>
-    <div class="addrow">
-      <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
-      <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
-      <select id="a-tier"></select>
-      <button id="a-btn">등록요청</button>
+  <details class="add">
+    <summary>순위에 안 보이는 클랜원이 있나요? 래더 아이디 등록요청</summary>
+    <div class="addbody">
+      <p class="hint">클랜 아이디 · 래더 계정 이름 · 클랜티어를 적고 <b>등록요청</b> 을 누르세요.
+        계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
+        <b>반영은 매일 자정</b>에 한 번 이뤄집니다.</p>
+      <div class="addrow">
+        <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
+        <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
+        <select id="a-tier"></select>
+        <button id="a-btn">등록요청</button>
+      </div>
+      <div class="pending" id="a-list"></div>
+      <div class="addfoot">
+        <button class="ghost" id="a-copy">전체 복사</button>
+        <button class="ghost" id="a-clear">비우기</button>
+        <span class="toast" id="a-toast"></span>
+      </div>
     </div>
-    <div class="pending" id="a-list"></div>
-    <div class="addfoot">
-      <button class="ghost" id="a-copy">전체 복사</button>
-      <button class="ghost" id="a-clear">비우기</button>
-      <span class="toast" id="a-toast"></span>
-    </div>
-  </section>
+  </details>
 
   <div class="bar">
     <input type="search" id="q" placeholder="계정 · 배틀태그 검색" autocomplete="off">

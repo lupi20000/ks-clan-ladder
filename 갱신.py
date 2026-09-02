@@ -380,13 +380,17 @@ def main():
         pub = {k: v for k, v in data.items() if k not in DROP_TOP}
         pub['rows'] = [{k: v for k, v in r.items() if k not in DROP_ROW}
                        for r in data['rows']]
-        os.makedirs(os.path.dirname(PUB), exist_ok=True)
+        folder = os.path.dirname(PUB)      # 파일 이름만 있으면 만들 폴더도 없다
+        if folder:
+            os.makedirs(folder, exist_ok=True)
         with open(PUB, 'w', encoding='utf-8') as f:
             f.write(page(tpl, '<script>window.KS_DATA = '
                     + json.dumps(pub, ensure_ascii=False, separators=(',', ':'))
                     + ';</script>'))
     except FileNotFoundError:
-        pass
+        # 틀 파일이 없을 때만 넘어간다. 조용히 지나가면 안 되니 알려준다.
+        print('!! %s 를 못 찾아 순위표 페이지를 못 만들었습니다' % TPL)
+        raise SystemExit(1)
 
     print('=' * 56)
     print('순위에 오른 계정   : %d개' % len(rows))
