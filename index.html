@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ks clan 래더 순위</title>
+</head>
+<body>
+<title>ks clan 래더 순위</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#eef0f4;
+  --panel:#ffffff;
+  --panel-2:#f6f7fa;
+  --line:#d5d9e2;
+  --line-soft:#e5e8ef;
+  --ink:#1b2030;
+  --ink-2:#4d5568;
+  --ink-3:#7c8496;
+  --accent:#2f6bb5;
+  --accent-soft:rgba(47,107,181,.10);
+  --good:#2f8f5b;
+  --bad:#c0503f;
+  --t-Black:#565d6e;  --t-Gold:#b2862a;   --t-Yellow:#9a8c1f;
+  --t-Red:#c0503f;    --t-Violet:#7a5cc4; --t-Blue:#3a78c8;
+  --t-Sky:#2b93ab;    --t-White:#7b8496;  --t-none:#8b93a4;
+  --r-T:#3a78c8; --r-P:#b2862a; --r-Z:#8b5cc0;
+  --shadow:0 1px 2px rgba(20,26,40,.06), 0 8px 24px -16px rgba(20,26,40,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#12151d;
+    --panel:#1a1e28;
+    --panel-2:#20252f;
+    --line:#2e3542;
+    --line-soft:#262c37;
+    --ink:#e6e9f0;
+    --ink-2:#a8b0c0;
+    --ink-3:#78808f;
+    --accent:#6fa4e8;
+    --accent-soft:rgba(111,164,232,.13);
+    --good:#5cbf8a;
+    --bad:#e07a68;
+    --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
+    --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
+    --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
+    --r-T:#6fa4e8; --r-P:#e0b155; --r-Z:#a98ee6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#12151d;
+  --panel:#1a1e28;
+  --panel-2:#20252f;
+  --line:#2e3542;
+  --line-soft:#262c37;
+  --ink:#e6e9f0;
+  --ink-2:#a8b0c0;
+  --ink-3:#78808f;
+  --accent:#6fa4e8;
+  --accent-soft:rgba(111,164,232,.13);
+  --good:#5cbf8a;
+  --bad:#e07a68;
+  --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
+  --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
+  --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
+  --r-T:#6fa4e8; --r-P:#e0b155; --r-Z:#a98ee6;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:940px;margin:0 auto;padding:32px 20px 64px;display:flex;flex-direction:column;gap:20px}
+
+/* ── 머리말 ── */
+.head{display:flex;flex-direction:column;gap:6px}
+.eyebrow{
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+}
+h1{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;
+  font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.1;
+  margin:0;text-wrap:balance;letter-spacing:-.01em;
+}
+.sub{color:var(--ink-3);font-size:13px;margin:0;font-variant-numeric:tabular-nums}
+
+/* ── 조작 막대 ── */
+.bar{
+  position:sticky;top:0;z-index:5;
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  box-shadow:var(--shadow);
+}
+input,select,button{font-family:inherit;font-size:14px;color:var(--ink)}
+input,select{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:8px 10px;
+}
+input[type=search]{flex:1 1 220px;min-width:0}
+input::placeholder{color:var(--ink-3)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{margin-left:auto;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ── 표 ── */
+.tablewrap{
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  overflow-x:auto;box-shadow:var(--shadow);
+}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line-soft)}
+thead th{
+  position:sticky;top:0;background:var(--panel-2);
+  font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+thead th.s{cursor:pointer}
+thead th.s:hover{color:var(--ink)}
+thead th.on{color:var(--accent)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--accent-soft)}
+.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+
+.rk{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  color:var(--ink-3);width:52px;text-align:right;font-size:13px;
+}
+tr.top .rk{color:var(--accent);font-weight:600;font-size:15px}
+
+.toon{display:flex;flex-direction:column;gap:1px}
+.toon a{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;font-size:15px;
+  color:var(--ink);text-decoration:none;border-bottom:1px solid transparent;
+}
+.toon a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.toon .bt{font-size:12px;color:var(--ink-3)}
+.toon .mobi{display:none}
+
+.tier{
+  display:inline-block;font-family:"Chakra Petch",sans-serif;font-weight:600;
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 8px;border-radius:2px;color:#fff;white-space:nowrap;
+}
+.dash{color:var(--ink-3)}
+.race{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:14px}
+
+.mmr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+.standing{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+.wl{display:flex;flex-direction:column;gap:3px;min-width:98px}
+.wl .t{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.wl .track{height:4px;background:var(--line-soft);border-radius:2px;overflow:hidden}
+.wl .fill{height:100%;background:var(--good)}
+.wl .fill.lo{background:var(--bad)}
+.empty{padding:40px 16px;text-align:center;color:var(--ink-3)}
+
+/* ── 아이디 추가 ── */
+.add{
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
+}
+.add h2{
+  font-family:"Chakra Petch","Noto Sans KR",sans-serif;font-weight:600;
+  font-size:15px;margin:0;letter-spacing:.01em;
+}
+.addrow{display:flex;flex-wrap:wrap;gap:8px}
+.addrow input{flex:1 1 180px;min-width:0}
+button{
+  background:var(--accent);border:1px solid var(--accent);color:#fff;
+  border-radius:3px;padding:8px 16px;cursor:pointer;font-weight:500;
+}
+button:hover{filter:brightness(1.08)}
+button.ghost{background:transparent;border-color:var(--line);color:var(--ink-2)}
+button.ghost:hover{border-color:var(--accent);color:var(--accent);filter:none}
+.pending{display:flex;flex-direction:column;gap:6px}
+.pend{
+  display:flex;align-items:center;gap:10px;padding:7px 10px;
+  background:var(--panel-2);border:1px solid var(--line-soft);border-radius:3px;
+  font-family:"IBM Plex Mono",monospace;font-size:13px;
+}
+.pend .arrow{color:var(--ink-3)}
+.pend .x{
+  margin-left:auto;background:none;border:none;color:var(--ink-3);
+  cursor:pointer;font-size:16px;line-height:1;padding:0 4px;
+}
+.pend .x:hover{color:var(--bad);filter:none}
+.addfoot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--ink-3);margin:0}
+.toast{font-size:13px;color:var(--good)}
+footer{color:var(--ink-3);font-size:12px;text-align:center}
+
+/* ── 휴대폰 ── */
+@media (max-width:640px){
+  .wrap{padding:20px 12px 44px;gap:14px}
+  table{min-width:0}
+  th,td{padding:9px 8px}
+  .col-race,.col-wl{display:none}
+  .toon{display:block}
+  .toon .bt,.toon .mobi{display:inline;font-size:12px;color:var(--ink-3)}
+  .toon .bt::before{content:" · "}
+  .toon a{font-size:14px}
+  .standing{display:none}
+  .rk{width:34px;padding-right:4px}
+  .mmr{font-size:15px}
+  .tier{font-size:10px;padding:2px 6px}
+  .bar{padding:10px}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <div class="eyebrow">cwal.gg 래더 기준</div>
+    <h1>ks clan 래더 순위</h1>
+    <p class="sub" id="m-updated"></p>
+  </header>
+
+  <div class="bar">
+    <input type="search" id="q" placeholder="계정 · 배틀태그 검색" autocomplete="off">
+    <select id="tier"></select>
+    <select id="race">
+      <option value="">종족 전체</option>
+      <option value="T">테란</option>
+      <option value="P">프로토스</option>
+      <option value="Z">저그</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="rk">#</th>
+          <th class="s" data-k="toon">계정</th>
+          <th class="s" data-k="tier">티어</th>
+          <th class="s col-race" data-k="cwalRace">종족</th>
+          <th class="s on" data-k="rating">MMR</th>
+          <th class="s col-wl" data-k="winrate">승패</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+
+  <section class="add">
+    <h2>래더 아이디 추가</h2>
+    <p class="hint">순위에 안 보이는 클랜원이 있으면 여기에 적어두세요. 다음 갱신 때 반영합니다.</p>
+    <div class="addrow">
+      <input id="a-id" placeholder="클랜 아이디" autocomplete="off">
+      <input id="a-toon" placeholder="래더 계정 이름" autocomplete="off">
+      <button id="a-btn">추가</button>
+    </div>
+    <div class="pending" id="a-list"></div>
+    <div class="addfoot">
+      <button class="ghost" id="a-copy">전체 복사</button>
+      <button class="ghost" id="a-clear">비우기</button>
+      <span class="toast" id="a-toast"></span>
+    </div>
+  </section>
+
+  <footer>cwal.gg 공개 데이터</footer>
+</div>
+
+<script>window.KS_DATA = {"updated":"2026-09-02 16:43","rows":[{"tier":"","toon":"Doong1[kS]","gateway":30,"rating":2353,"standing":181,"cwalRace":"T","wins":16,"losses":7,"battleTag":"미친마법사"},{"tier":"Gold","toon":"ChogOsu[kS].","gateway":30,"rating":2345,"standing":190,"cwalRace":"Z","wins":31,"losses":19,"battleTag":"ChogOsu"},{"tier":"Gold","toon":"Lanma[kS]","gateway":30,"rating":2305,"standing":267,"cwalRace":"T","wins":21,"losses":9,"battleTag":"미친마법사"},{"tier":"Gold","toon":"Queen[KS]","gateway":30,"rating":2256,"standing":null,"cwalRace":"Z","wins":7,"losses":4,"battleTag":"jjabqueen"},{"tier":"Yellow","toon":"Siege[kS]","gateway":30,"rating":2244,"standing":478,"cwalRace":"T","wins":66,"losses":38,"battleTag":"잇팁"},{"tier":"Yellow","toon":"Maple[kS]","gateway":30,"rating":2228,"standing":574,"cwalRace":"Z","wins":38,"losses":15,"battleTag":"꼬마자객"},{"tier":"Gold","toon":"Machine[kS]","gateway":30,"rating":2221,"standing":617,"cwalRace":"T","wins":7,"losses":0,"battleTag":"scv"},{"tier":"미배정","toon":"Jerry[kS]","gateway":30,"rating":2215,"standing":652,"cwalRace":"Z","wins":5,"losses":0,"battleTag":"제리"},{"tier":"Gold","toon":"qufgh[kS]","gateway":30,"rating":2211,"standing":681,"cwalRace":"T","wins":91,"losses":56,"battleTag":"정별호"},{"tier":"Yellow","toon":"By[kS]","gateway":30,"rating":2208,"standing":704,"cwalRace":"P","wins":7,"losses":2,"battleTag":"송정우"},{"tier":"Gold","toon":"sB[kS]","gateway":30,"rating":2203,"standing":751,"cwalRace":"T","wins":40,"losses":14,"battleTag":"MoKa"},{"tier":"Yellow","toon":"J.R[kS]","gateway":30,"rating":2197,"standing":797,"cwalRace":"T","wins":45,"losses":23,"battleTag":"저스틴리버"},{"tier":"Yellow","toon":"knic[kS]","gateway":30,"rating":2185,"standing":863,"cwalRace":"Z","wins":12,"losses":5,"battleTag":"강수현"},{"tier":"","toon":"bigbear3[kS]","gateway":10,"rating":2173,"standing":960,"cwalRace":"Z","wins":10,"losses":4,"battleTag":"떡보제국"},{"tier":"Violet","toon":"SCV","gateway":30,"rating":2161,"standing":1087,"cwalRace":"T","wins":9,"losses":0,"battleTag":"lIIlIIlIIIlI"},{"tier":"Yellow","toon":"man12[kS]","gateway":30,"rating":2155,"standing":1129,"cwalRace":"T","wins":24,"losses":16,"battleTag":"거대한루비전차"},{"tier":"Gold","toon":"Cloud[kS]","gateway":30,"rating":2150,"standing":null,"cwalRace":"P","wins":9,"losses":5,"battleTag":"Cloud"},{"tier":"Gold","toon":"rmfmrm[kS]","gateway":30,"rating":2130,"standing":null,"cwalRace":"Z","wins":5,"losses":1,"battleTag":"깔끔한잿빛코도"},{"tier":"Yellow","toon":"Poker[kS]","gateway":30,"rating":2120,"standing":1530,"cwalRace":"P","wins":5,"losses":2,"battleTag":"기운찬곰"},{"tier":"Violet","toon":"SOVAVA[kS]","gateway":30,"rating":2120,"standing":1532,"cwalRace":"Z","wins":69,"losses":47,"battleTag":"엄청난마법사"},{"tier":"Red","toon":"2525[kS]","gateway":30,"rating":2119,"standing":1536,"cwalRace":"Z","wins":87,"losses":68,"battleTag":"퀸옐로우"},{"tier":"Violet","toon":"HyunVOice[kS]","gateway":30,"rating":2118,"standing":1563,"cwalRace":"Z","wins":152,"losses":117,"battleTag":"현보이스"},{"tier":"Red","toon":"Comodo[kS]","gateway":30,"rating":2117,"standing":1575,"cwalRace":"P","wins":4,"losses":1,"battleTag":"Comodo"},{"tier":"Violet","toon":"rOdeO[KaL]","gateway":30,"rating":2107,"standing":1718,"cwalRace":"Z","wins":5,"losses":0,"battleTag":"rOdeO"},{"tier":"Yellow","toon":"JM[kS]","gateway":30,"rating":2098,"standing":1841,"cwalRace":"T","wins":125,"losses":92,"battleTag":"정민이"},{"tier":"Yellow","toon":"MiNi[kS]","gateway":30,"rating":2092,"standing":1939,"cwalRace":"P","wins":8,"losses":5,"battleTag":"내이름은갓조"},{"tier":"Yellow","toon":"Karu[ks]","gateway":30,"rating":2090,"standing":1953,"cwalRace":"P","wins":10,"losses":5,"battleTag":"나무"},{"tier":"Black","toon":"ivOry[kS]","gateway":30,"rating":2088,"standing":1974,"cwalRace":"Z","wins":18,"losses":11,"battleTag":"인치호"},{"tier":"Yellow","toon":"TrasH[kS]","gateway":30,"rating":2088,"standing":1980,"cwalRace":"P","wins":11,"losses":6,"battleTag":"Barcelona"},{"tier":"Gold","toon":"Ranma[kS]","gateway":30,"rating":2083,"standing":2037,"cwalRace":"T","wins":26,"losses":14,"battleTag":"찍찍"},{"tier":"Blue","toon":"Forward[kS]","gateway":10,"rating":2082,"standing":2041,"cwalRace":"T","wins":4,"losses":1,"battleTag":"CraDius"},{"tier":"Yellow","toon":"bushdog[ks]","gateway":30,"rating":2064,"standing":2308,"cwalRace":"Z","wins":17,"losses":10,"battleTag":"그림자용"},{"tier":"Gold","toon":"DivinE[kS]","gateway":30,"rating":2055,"standing":2449,"cwalRace":"P","wins":28,"losses":20,"battleTag":"Bisu"},{"tier":"Red","toon":"siki[ks]","gateway":30,"rating":2053,"standing":2486,"cwalRace":"P","wins":20,"losses":6,"battleTag":"Absolute"},{"tier":"Violet","toon":"Runner[kS]","gateway":30,"rating":2047,"standing":2604,"cwalRace":"P","wins":22,"losses":8,"battleTag":"Subin"},{"tier":"Violet","toon":"elyuel","gateway":30,"rating":2046,"standing":2616,"cwalRace":"P","wins":12,"losses":4,"battleTag":"에류엘"},{"tier":"Sky","toon":"Code","gateway":30,"rating":2042,"standing":2738,"cwalRace":"P","wins":66,"losses":51,"battleTag":"박하사탕"},{"tier":"Violet","toon":"Jun[kS]","gateway":30,"rating":2038,"standing":2866,"cwalRace":"T","wins":63,"losses":48,"battleTag":"짭재호"},{"tier":"Violet","toon":"9oodbye[kS]","gateway":30,"rating":2032,"standing":3054,"cwalRace":"T","wins":11,"losses":3,"battleTag":"밤수킹"},{"tier":"Blue","toon":"ickle[kS]","gateway":30,"rating":2031,"standing":3098,"cwalRace":"Z","wins":34,"losses":22,"battleTag":"수정홀"},{"tier":"Violet","toon":"gray[ks]","gateway":30,"rating":1999,"standing":3607,"cwalRace":"T","wins":10,"losses":4,"battleTag":"사가"},{"tier":"Violet","toon":"Stardust[kS]","gateway":30,"rating":1998,"standing":3629,"cwalRace":"P","wins":22,"losses":16,"battleTag":"뱃살만효도르"},{"tier":"Yellow","toon":"Notable[kS]","gateway":30,"rating":1994,"standing":3681,"cwalRace":"Z","wins":25,"losses":19,"battleTag":"Koreanair"},{"tier":"Red","toon":"Insanity[kS]","gateway":30,"rating":1975,"standing":3939,"cwalRace":"P","wins":31,"losses":22,"battleTag":"sinhus"},{"tier":"Violet","toon":"AngSangGuk[kS]","gateway":30,"rating":1970,"standing":4006,"cwalRace":"P","wins":3,"losses":3,"battleTag":"상국"},{"tier":"Red","toon":"SungA[kS]","gateway":30,"rating":1962,"standing":4152,"cwalRace":"Z","wins":6,"losses":1,"battleTag":"성아"},{"tier":"Gold","toon":"haO[kS]","gateway":30,"rating":1961,"standing":4165,"cwalRace":"Z","wins":7,"losses":6,"battleTag":"OPSS"},{"tier":"Red","toon":"HanSoL[kS]","gateway":30,"rating":1960,"standing":4180,"cwalRace":"Z","wins":9,"losses":5,"battleTag":"무럭"},{"tier":"Violet","toon":"Berry[KS]","gateway":30,"rating":1956,"standing":4239,"cwalRace":"Z","wins":13,"losses":7,"battleTag":"베리"},{"tier":"Red","toon":"gom[kS]","gateway":30,"rating":1951,"standing":4335,"cwalRace":"P","wins":4,"losses":2,"battleTag":"곰곰곰"},{"tier":"Red","toon":"Coni[ks]","gateway":30,"rating":1948,"standing":4387,"cwalRace":"Z","wins":27,"losses":22,"battleTag":"suksamo86"},{"tier":"Violet","toon":"Soul_Nope","gateway":30,"rating":1940,"standing":4533,"cwalRace":"Z","wins":7,"losses":3,"battleTag":"다이아퍼"},{"tier":"Red","toon":"Easygoing[ks]","gateway":30,"rating":1936,"standing":4593,"cwalRace":"Z","wins":4,"losses":4,"battleTag":"정석"},{"tier":"Red","toon":"Arch[kS]","gateway":30,"rating":1935,"standing":4609,"cwalRace":"T","wins":20,"losses":17,"battleTag":"뭐가뭔지"},{"tier":"Violet","toon":"Elephant[kS]","gateway":30,"rating":1932,"standing":4680,"cwalRace":"T","wins":12,"losses":2,"battleTag":"lIlIlIlllllI"},{"tier":"Violet","toon":"Flak88[kS]","gateway":30,"rating":1929,"standing":4744,"cwalRace":"T","wins":22,"losses":17,"battleTag":"메딕"},{"tier":"Violet","toon":"Calm[kS]","gateway":30,"rating":1923,"standing":4852,"cwalRace":"Z","wins":15,"losses":9,"battleTag":"용땅"},{"tier":"Violet","toon":"SoUL[kS]","gateway":30,"rating":1920,"standing":4920,"cwalRace":"T","wins":53,"losses":30,"battleTag":"SoUL"},{"tier":"Blue","toon":"5Drone[kS]","gateway":30,"rating":1903,"standing":5270,"cwalRace":"Z","wins":49,"losses":33,"battleTag":"아나"},{"tier":"Red","toon":"Stone[kS]","gateway":30,"rating":1898,"standing":5406,"cwalRace":"T","wins":100,"losses":92,"battleTag":"kima"},{"tier":"Violet","toon":"xkshtm[kS]","gateway":30,"rating":1896,"standing":5457,"cwalRace":"P","wins":40,"losses":25,"battleTag":"Safety"},{"tier":"Blue","toon":"Gun23[KaL]","gateway":45,"rating":1887,"standing":5643,"cwalRace":"Z","wins":26,"losses":22,"battleTag":"백대건"},{"tier":"Violet","toon":"d0ng[kS]","gateway":30,"rating":1877,"standing":5867,"cwalRace":"P","wins":66,"losses":56,"battleTag":"동칼동칼"},{"tier":"Red","toon":"OneTo[kS]","gateway":30,"rating":1876,"standing":null,"cwalRace":"T","wins":22,"losses":20,"battleTag":"운좋은호랑이"},{"tier":"Violet","toon":"GGPlay[kS]","gateway":30,"rating":1871,"standing":6002,"cwalRace":"Z","wins":5,"losses":4,"battleTag":"꾀돌이"},{"tier":"Blue","toon":"ddakddak2[ks]","gateway":30,"rating":1866,"standing":6094,"cwalRace":"P","wins":60,"losses":46,"battleTag":"강창모"},{"tier":"Red","toon":"Teo[kS]","gateway":30,"rating":1842,"standing":6696,"cwalRace":"T","wins":18,"losses":10,"battleTag":"쩡태오"},{"tier":"Violet","toon":"Axe[kS]","gateway":30,"rating":1833,"standing":6925,"cwalRace":"T","wins":3,"losses":3,"battleTag":"졸린곰"},{"tier":"","toon":"dOn9[kS]","gateway":30,"rating":1833,"standing":6928,"cwalRace":"T","wins":7,"losses":5,"battleTag":"최지호"},{"tier":"Blue","toon":"KATANA[kS]","gateway":30,"rating":1817,"standing":7376,"cwalRace":"P","wins":182,"losses":185,"battleTag":"번듯한오크"},{"tier":"Sky","toon":"Fleta[kS]","gateway":30,"rating":1815,"standing":7424,"cwalRace":"P","wins":5,"losses":0,"battleTag":"플레타타"},{"tier":"Blue","toon":"Its[kS]","gateway":30,"rating":1808,"standing":7635,"cwalRace":"P","wins":5,"losses":4,"battleTag":"이츠"},{"tier":"Violet","toon":"9008[KS]","gateway":30,"rating":1798,"standing":7927,"cwalRace":"P","wins":6,"losses":1,"battleTag":"Shuttle"},{"tier":"Red","toon":"Cliff[kS]","gateway":30,"rating":1790,"standing":8132,"cwalRace":"Z","wins":5,"losses":6,"battleTag":"에반정"},{"tier":"","toon":"Deviloo[KS]","gateway":30,"rating":1790,"standing":8134,"cwalRace":"T","wins":75,"losses":69,"battleTag":"Deviloo"},{"tier":"Gold","toon":"Withoutwax","gateway":30,"rating":1788,"standing":8199,"cwalRace":"T","wins":12,"losses":9,"battleTag":"BeBe"},{"tier":"Sky","toon":"BBBuuuUU[kS]","gateway":30,"rating":1781,"standing":8393,"cwalRace":"Z","wins":17,"losses":12,"battleTag":"Scouterpa"},{"tier":"Blue","toon":"Hades[ks]","gateway":30,"rating":1766,"standing":8883,"cwalRace":"P","wins":29,"losses":23,"battleTag":"asd13"},{"tier":"","toon":"BisuSnow[kS]","gateway":30,"rating":1762,"standing":9025,"cwalRace":"P","wins":9,"losses":4,"battleTag":"BisuSnow"},{"tier":"","toon":"zzangGu[kS]","gateway":30,"rating":1754,"standing":9340,"cwalRace":"P","wins":4,"losses":1,"battleTag":"박장호"},{"tier":"Violet","toon":"BANDI[kS]","gateway":30,"rating":1741,"standing":9894,"cwalRace":"Z","wins":15,"losses":11,"battleTag":"광포한까마귀"},{"tier":"Blue","toon":"lIllIllIIlIII","gateway":10,"rating":1741,"standing":9881,"cwalRace":"P","wins":50,"losses":42,"battleTag":"결한"},{"tier":"미배정","toon":"JukCheon[kS]","gateway":30,"rating":1733,"standing":10074,"cwalRace":"P","wins":3,"losses":2,"battleTag":"죽천로"},{"tier":"Sky","toon":"KanCho[kS]","gateway":30,"rating":1730,"standing":10136,"cwalRace":"Z","wins":71,"losses":68,"battleTag":"KanCho"},{"tier":"Sky","toon":"Electric[kS]","gateway":30,"rating":1725,"standing":10276,"cwalRace":"T","wins":3,"losses":3,"battleTag":"각성한전기쥐"},{"tier":"Sky","toon":"LIVRE[kS]","gateway":30,"rating":1702,"standing":10944,"cwalRace":"Z","wins":4,"losses":1,"battleTag":"까꿍이"},{"tier":"Red","toon":"Tiki[kS)","gateway":10,"rating":1694,"standing":11157,"cwalRace":"Z","wins":2,"losses":3,"battleTag":"MoKa"},{"tier":"Blue","toon":"SSS[kS]","gateway":30,"rating":1688,"standing":11350,"cwalRace":"T","wins":29,"losses":29,"battleTag":"서참취"},{"tier":"Gold","toon":"Animal[kS]","gateway":30,"rating":1687,"standing":null,"cwalRace":"T","wins":2,"losses":3,"battleTag":"갓콩"},{"tier":"Blue","toon":"neco[kS]","gateway":30,"rating":1686,"standing":11407,"cwalRace":"T","wins":38,"losses":43,"battleTag":"neco"},{"tier":"Violet","toon":"Palmer[kS]","gateway":30,"rating":1604,"standing":14065,"cwalRace":"Z","wins":27,"losses":35,"battleTag":"sAviOr"},{"tier":"Sky","toon":"exlar[ks]","gateway":30,"rating":1603,"standing":14091,"cwalRace":"T","wins":31,"losses":26,"battleTag":"고약한수도사"},{"tier":"","toon":"YouSin[kS]","gateway":30,"rating":1602,"standing":14133,"cwalRace":"P","wins":134,"losses":123,"battleTag":"섹시한늑대"},{"tier":"Blue","toon":"DdangCheol","gateway":30,"rating":1599,"standing":14215,"cwalRace":"T","wins":6,"losses":11,"battleTag":"탈주닌자겐지"},{"tier":"White","toon":"colakim[kS]","gateway":30,"rating":1565,"standing":15443,"cwalRace":"T","wins":7,"losses":7,"battleTag":"cocacola23"},{"tier":"Sky","toon":"Wls[kS]","gateway":30,"rating":1553,"standing":15867,"cwalRace":"Z","wins":2,"losses":7,"battleTag":"새로운주인"},{"tier":"Blue","toon":"100su_MOM","gateway":30,"rating":1522,"standing":16882,"cwalRace":"T","wins":3,"losses":3,"battleTag":"백수"},{"tier":"Blue","toon":"Eagles[kS]","gateway":30,"rating":1514,"standing":17165,"cwalRace":"Z","wins":1,"losses":4,"battleTag":"이글스"},{"tier":"Sky","toon":"gonjook[ks]","gateway":30,"rating":1504,"standing":17492,"cwalRace":"T","wins":70,"losses":72,"battleTag":"Real"},{"tier":"Sky","toon":"URSSU[kS]","gateway":30,"rating":1501,"standing":17599,"cwalRace":"T","wins":12,"losses":12,"battleTag":"김대호"},{"tier":"Blue","toon":"3Star_Jogak","gateway":30,"rating":1486,"standing":18079,"cwalRace":"Z","wins":21,"losses":18,"battleTag":"산산조각"},{"tier":"Black","toon":"Paralyze[kS]","gateway":30,"rating":1464,"standing":18849,"cwalRace":"P","wins":3,"losses":17,"battleTag":"스타는내인생"},{"tier":"Sky","toon":"FAIRI[kS]","gateway":30,"rating":1368,"standing":21326,"cwalRace":"P","wins":5,"losses":7,"battleTag":"Kyul"},{"tier":"Black","toon":"5252[kS]","gateway":30,"rating":1317,"standing":23071,"cwalRace":"Z","wins":0,"losses":0,"battleTag":""},{"tier":"Sky","toon":"Heaven[kS]","gateway":30,"rating":1287,"standing":23626,"cwalRace":"P","wins":10,"losses":15,"battleTag":"헤븐"},{"tier":"Sky","toon":"PhoeNix[kS]","gateway":30,"rating":1239,"standing":24602,"cwalRace":"T","wins":115,"losses":123,"battleTag":"불사조테란"},{"tier":"Gold","toon":"MuGwang[kS]","gateway":30,"rating":1194,"standing":25537,"cwalRace":"P","wins":0,"losses":17,"battleTag":"류재환"},{"tier":"Gold","toon":"ShaDOw[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Gold","toon":"One[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Yellow","toon":"sinsa[ks]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":3,"losses":0,"battleTag":"심따거"},{"tier":"Yellow","toon":"BW[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":""},{"tier":"Yellow","toon":"DynamiC[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"Z","wins":0,"losses":0,"battleTag":""},{"tier":"Red","toon":"SuSaeng[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":0,"battleTag":""},{"tier":"Violet","toon":"Blue[kS]","gateway":30,"rating":0,"standing":null,"cwalRace":"T","wins":0,"losses":0,"battleTag":""},{"tier":"Sky","toon":"BOOM[KS]","gateway":30,"rating":0,"standing":null,"cwalRace":"P","wins":0,"losses":1,"battleTag":"엉뚱한바지"}]};</script>
+
+<script>
+(function(){
+  var D = window.KS_DATA, R = D.rows;
+  var TIERS = ["Black","Gold","Yellow","Red","Violet","Blue","Sky","White"];
+  var RACE_KO = {T:"테란", P:"프로토스", Z:"저그"};
+
+  // 순위는 MMR 순서로 한 번만 매겨두고, 정렬을 바꿔도 그대로 쓴다
+  R.slice().sort(function(a,b){return b.rating-a.rating;})
+   .forEach(function(r,i){ r._rank = i+1; });
+  R.forEach(function(r){
+    var g = r.wins + r.losses;
+    r._wr = g ? r.wins/g : 0;
+    r._games = g;
+    r.winrate = r._wr;
+    r._hay = ((r.id||"") + " " + r.toon + " " + (r.battleTag||"")).toLowerCase();
+  });
+
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"]/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+    });
+  }
+  function tierVar(t){ return TIERS.indexOf(t)>=0 ? "var(--t-"+t+")" : "var(--t-none)"; }
+
+  document.getElementById("m-updated").textContent = D.updated + " 갱신";
+
+  var sel = document.getElementById("tier");
+  sel.innerHTML = '<option value="">티어 전체</option>' + TIERS.map(function(t){
+    return '<option value="'+t+'">'+t+'</option>';
+  }).join("");
+
+  var sortKey = "rating", sortDir = -1;
+
+  function draw(){
+    var q    = document.getElementById("q").value.trim().toLowerCase();
+    var tier = sel.value;
+    var race = document.getElementById("race").value;
+
+    var list = R.filter(function(r){
+      if (q && r._hay.indexOf(q) < 0) return false;
+      if (tier && r.tier !== tier) return false;
+      if (race && r.cwalRace !== race) return false;
+      return true;
+    });
+
+    list.sort(function(a,b){
+      var x = a[sortKey], y = b[sortKey];
+      if (typeof x === "string" || typeof y === "string"){
+        x = String(x||"").toLowerCase(); y = String(y||"").toLowerCase();
+        return x < y ? sortDir : x > y ? -sortDir : 0;
+      }
+      return ((x||0) - (y||0)) * sortDir;
+    });
+
+    document.getElementById("count").textContent = list.length + " / " + R.length + " 계정";
+
+    if (!list.length){
+      document.getElementById("tb").innerHTML =
+        '<tr><td colspan="6" class="empty">조건에 맞는 계정이 없습니다.</td></tr>';
+      return;
+    }
+
+    document.getElementById("tb").innerHTML = list.map(function(r){
+      var url = "https://cwal.gg/profile/" + r.gateway + "/" + encodeURIComponent(r.toon);
+      var wr  = Math.round(r._wr * 100);
+
+      // 휴대폰에서는 종족·전적 열이 숨으니 계정 아랫줄에 같이 적어준다
+      var mobi = (r.battleTag ? " · " : "")
+               + (RACE_KO[r.cwalRace] || r.cwalRace || "")
+               + (r._games ? " " + r.wins + "승 " + r.losses + "패" : "");
+
+      return '<tr' + (r._rank <= 3 ? ' class="top"' : '') + '>'
+        + '<td class="rk">' + r._rank + '</td>'
+        + '<td><span class="toon"><a href="' + url + '" target="_blank" rel="noopener">'
+          + esc(r.toon) + '</a>'
+          + (r.battleTag ? '<span class="bt">' + esc(r.battleTag) + '</span>' : '')
+          + '<span class="mobi">' + esc(mobi) + '</span>'
+          + '</span></td>'
+        + '<td>' + (r.tier
+            ? '<span class="tier" style="background:' + tierVar(r.tier) + '">' + esc(r.tier) + '</span>'
+            : '<span class="dash">-</span>') + '</td>'
+        + '<td class="col-race"><span class="race" style="color:var(--r-' + esc(r.cwalRace || "T") + ')">'
+          + esc(RACE_KO[r.cwalRace] || r.cwalRace || "-") + '</span></td>'
+        + '<td class="num"><div class="mmr">' + r.rating.toLocaleString() + '</div>'
+          + (r.standing ? '<div class="standing">전체 ' + r.standing.toLocaleString() + '위</div>' : '')
+          + '</td>'
+        + '<td class="col-wl"><div class="wl"><span class="t">' + r.wins + '승 ' + r.losses + '패'
+          + (r._games ? '  ' + wr + '%' : '') + '</span>'
+          + '<span class="track"><span class="fill' + (wr < 50 ? ' lo' : '') + '" style="width:'
+          + (r._games ? wr : 0) + '%"></span></span></div></td>'
+        + '</tr>';
+    }).join("");
+  }
+
+  ["q","race"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", draw);
+  });
+  sel.addEventListener("input", draw);
+
+  Array.prototype.forEach.call(document.querySelectorAll("th.s"), function(th){
+    th.addEventListener("click", function(){
+      var k = th.dataset.k;
+      if (sortKey === k) sortDir = -sortDir;
+      else { sortKey = k; sortDir = (k === "toon" || k === "tier") ? 1 : -1; }
+      Array.prototype.forEach.call(document.querySelectorAll("th.s"), function(o){
+        o.classList.toggle("on", o === th);
+      });
+      draw();
+    });
+  });
+
+  draw();
+
+  // ── 래더 아이디 추가 (이 브라우저에만 저장됨) ──
+  var KEY = "ks-ladder-ids", pend = [];
+  try { pend = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e) { pend = []; }
+
+  var listEl = document.getElementById("a-list");
+  var toastEl = document.getElementById("a-toast");
+  var timer;
+
+  function say(msg){
+    toastEl.textContent = msg;
+    clearTimeout(timer);
+    timer = setTimeout(function(){ toastEl.textContent = ""; }, 2400);
+  }
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(pend)); } catch(e) {}
+  }
+  function drawPend(){
+    listEl.innerHTML = pend.map(function(p, i){
+      return '<div class="pend"><span>' + esc(p.id) + '</span>'
+           + '<span class="arrow">&rarr;</span><span>' + esc(p.toon) + '</span>'
+           + '<button class="x" data-i="' + i + '" title="지우기">&times;</button></div>';
+    }).join("");
+  }
+  drawPend();
+
+  document.getElementById("a-btn").addEventListener("click", function(){
+    var id = document.getElementById("a-id").value.trim();
+    var toon = document.getElementById("a-toon").value.trim();
+    if (!id || !toon){ say("두 칸을 모두 채워주세요."); return; }
+    pend.push({id:id, toon:toon});
+    save(); drawPend();
+    document.getElementById("a-id").value = "";
+    document.getElementById("a-toon").value = "";
+    document.getElementById("a-id").focus();
+    say("추가했습니다.");
+  });
+
+  listEl.addEventListener("click", function(e){
+    var b = e.target.closest("button.x");
+    if (!b) return;
+    pend.splice(+b.dataset.i, 1);
+    save(); drawPend();
+  });
+
+  document.getElementById("a-copy").addEventListener("click", function(){
+    if (!pend.length){ say("추가한 게 없습니다."); return; }
+    var text = pend.map(function(p){ return p.id + "\t" + p.toon; }).join("\n");
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); say("복사했습니다. 붙여넣어 전달해 주세요."); }
+    catch(err) { say("복사가 안 되면 직접 긁어서 복사해 주세요."); }
+    document.body.removeChild(ta);
+  });
+
+  document.getElementById("a-clear").addEventListener("click", function(){
+    pend = []; save(); drawPend(); say("비웠습니다.");
+  });
+})();
+</script>
+
+</body>
+</html>
