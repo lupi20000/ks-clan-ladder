@@ -354,7 +354,10 @@ def main():
 
     rows.sort(key=lambda x: -x['rating'])
     data = {
-        'updated': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
+        # 깃허브 서버는 세계표준시로 돌기 때문에 한국시간으로 고정해서 적는다
+        'updated': datetime.datetime.now(
+            datetime.timezone(datetime.timedelta(hours=9))
+        ).strftime('%Y-%m-%d %H:%M'),
         'total': len(roster), 'ladderSize': len(ladder),
         'rows': rows, 'missing': missing, 'errors': errors,
     }
