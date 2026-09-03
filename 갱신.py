@@ -181,6 +181,7 @@ def detail(gw, toon, n=10):
                 'o': m.get('opponentToon') or '',            # 상대 계정
                 'd': m.get('mmrDelta') or 0,                 # 점수 증감
                 'i': m.get('matchId') or '',                 # 리플레이 찾을 때 쓰는 경기번호
+                't': m.get('timestamp') or 0,                # 경기한 시각 (1970년부터 밀리초)
             })
     return mu, recent, mmr
 
