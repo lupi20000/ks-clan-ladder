@@ -73,6 +73,9 @@ def page(tpl, inner):
             '<title>ks clan 래더 순위</title>\n</head>\n<body>\n'
             + tpl.replace(MARK, inner) + '\n</body>\n</html>\n')
 
+# 리플레이 파일 주소는 이 뒤에 붙는 부분만 다르다. 페이지에는 뒷부분만 넣는다.
+RP = 'https://storage.googleapis.com/starcraft-user-uploads-prod/S1-replays/'
+
 KS = re.compile(r'\[\s*k\s*s\s*[\]\)]', re.I)     # [kS] [ks) [KS] …
 TIERS = ('Black', 'Gold', 'Yellow', 'Red', 'Violet', 'Blue', 'Sky', 'White')
 
@@ -132,6 +135,7 @@ def sweep():
 def row_of(r, acc, how, sure):
     """순위표 한 줄 만들기"""
     return {
+        'estMmr': False,          # 점수를 경기 기록에서 되살렸는지
         'id': r['id'] if r else None,
         'tier': r['tier'] if r else '',
         'race': r['race'] if r else '',
@@ -151,9 +155,12 @@ def detail(gw, toon, n=10):
 
     순위표에서 계정 이름을 눌렀을 때 펼쳐지는 내용이다.
     실패해도 그냥 비워둔다 (순위 자체에는 지장이 없다).
+
+    MMR 도 같이 계산해서 돌려준다. cwal 이 어떤 계정은 점수를 0 으로 주는데,
+    경기 기록에는 그때그때 점수가 남아 있어서 마지막 경기로 되살릴 수 있다.
     """
     t = urllib.parse.quote(toon, safe='')
-    mu, recent = {}, []
+    mu, recent, mmr = {}, [], 0
 
     d = fetch('%s/player/%d/%s' % (BASE, gw, t))
     if isinstance(d, dict):
@@ -163,14 +170,63 @@ def detail(gw, toon, n=10):
 
     d = fetch('%s/player/%d/%s/matches' % (BASE, gw, t))
     if isinstance(d, dict):
-        for m in (d.get('matches') or [])[:n]:
+        ms = d.get('matches') or []
+        if ms and ms[0].get('mmr'):
+            # 목록 맨 앞이 가장 최근 경기다. 그때 점수 + 증감 = 지금 점수
+            mmr = (ms[0].get('mmr') or 0) + (ms[0].get('mmrDelta') or 0)
+        for m in ms[:n]:
             recent.append({
                 'w': 1 if m.get('result') == 'win' else 0,   # 이겼나
                 'm': m.get('matchup') or '',                 # TvZ 같은 종족 대결
                 'o': m.get('opponentToon') or '',            # 상대 계정
                 'd': m.get('mmrDelta') or 0,                 # 점수 증감
+                'i': m.get('matchId') or '',                 # 리플레이 찾을 때 쓰는 경기번호
             })
-    return mu, recent
+    return mu, recent, mmr
+
+
+def replays(rows):
+    """최근 경기들의 리플레이 파일 주소를 받아 각 경기에 붙인다.
+
+    cwal 은 경기번호로 물어보면 리플레이 파일이 있는 주소를 알려준다.
+    같은 경기가 두 클랜원한테 겹쳐 나오므로 번호를 겹치지 않게 모아서 한 번씩만 묻는다.
+    주소는 앞부분이 늘 똑같아서 뒷부분만 저장한다 (페이지 용량을 아끼려고).
+    """
+    ids = []
+    seen = set()
+    for r in rows:
+        for m in r.get('recent') or []:
+            i = m.get('i')
+            if i and i not in seen:
+                seen.add(i)
+                ids.append(i)
+    if not ids:
+        return
+
+    print('리플레이 주소 받는 중 (%d경기)' % len(ids))
+    got = {}
+
+    def ask(todo):
+        for i, d in zip(todo, each(lambda x: fetch('%s/replay/%s' % (BASE, x)),
+                                   todo, '경기', 200)):
+            if isinstance(d, dict) and d.get('replayUrl'):
+                u = d['replayUrl']
+                got[i] = u[len(RP):] if u.startswith(RP) else u
+
+    ask(ids)
+    # 한꺼번에 물어보면 일부는 빈손으로 온다. 못 받은 것만 골라 한 번 더 묻는다.
+    again = [i for i in ids if i not in got]
+    if again:
+        print('  못 받은 %d경기 다시 물어보는 중' % len(again))
+        time.sleep(3)
+        ask(again)
+
+    for r in rows:
+        for m in r.get('recent') or []:
+            u = got.get(m.pop('i', None))
+            if u:
+                m['rp'] = u                # 리플레이 내려받기 주소
+    print('  리플레이 찾음 %d / %d 경기' % (len(got), len(ids)))
 
 
 def lookup(toon, gateways=GATEWAYS):
@@ -350,7 +406,9 @@ def main():
     print('상세 전적 받는 중 (%d개)' % len(rows))
     for row, d in zip(rows, each(lambda x: detail(x['gateway'], x['toon']),
                                  rows, '개', 25)):
-        row['mu'], row['recent'] = d if d else ({}, [])
+        row['mu'], row['recent'], mmr = d if d else ({}, [], 0)
+        if not row['rating'] and mmr:
+            row['rating'], row['estMmr'] = mmr, True
 
     # cwal 이 한꺼번에 많이 물어보면 종종 빈손으로 답한다.
     # 그러면 계정을 눌러도 종족별 전적이 안 보이므로, 빈 것만 골라 다시 묻는다.
@@ -364,14 +422,23 @@ def main():
                                       again, '개', 25)):
             if not d:
                 continue
-            mu, recent = d
+            mu, recent, mmr = d
             if mu:
                 row['mu'] = mu
             if recent:
                 row['recent'] = recent
+            if not row['rating'] and mmr:
+                row['rating'], row['estMmr'] = mmr, True
     left = len([r for r in rows if not r['mu']])
     if left:
         print('  (%d개는 끝내 전적을 못 받았습니다)' % left)
+
+    est = len([r for r in rows if r.get('estMmr')])
+    if est:
+        print('  점수가 0 으로 온 %d개는 마지막 경기 기록에서 되살렸습니다' % est)
+
+    # 7-2) 최근 경기의 리플레이 내려받기 주소
+    replays(rows)
 
     rows.sort(key=lambda x: -x['rating'])
     data = {

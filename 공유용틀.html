@@ -161,6 +161,7 @@ tr.open .nm::after{content:"b4"}
 
 .mmr{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
 .standing{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mmr.est{color:var(--ink-2);cursor:help}
 
 .wl{display:flex;flex-direction:column;gap:3px;min-width:98px}
 .wl .t{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
@@ -201,6 +202,14 @@ tr.det:hover td{background:var(--panel-2)}
   color:var(--good);flex:none;
 }
 .g .d.m{color:var(--bad)}
+.g .rp{
+  flex:none;width:19px;height:19px;border-radius:3px;
+  border:1px solid var(--line);color:var(--ink-3);text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;line-height:1;
+}
+.g .rp:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.g .rp.off{visibility:hidden}
 .none{font-size:12px;color:var(--ink-3);line-height:1.7}
 .none a{color:var(--accent);text-decoration:underline}
 
@@ -437,8 +446,11 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
           + esc(r.tier) + '</span></td>'
         + '<td class="col-race"><span class="race" style="color:var(--r-' + esc(r.cwalRace || "T") + ')">'
           + esc(RACE_KO[r.cwalRace] || r.cwalRace || "-") + '</span></td>'
-        + '<td class="num"><div class="mmr">' + r.rating.toLocaleString() + '</div>'
-          + (r.standing ? '<div class="standing">전체 ' + r.standing.toLocaleString() + '위</div>' : '')
+        + '<td class="num"><div class="mmr' + (r.estMmr ? ' est' : '') + '"'
+          + (r.estMmr ? ' title="cwal.gg 에 점수가 안 올라와 있어 마지막 경기 기록으로 계산한 값입니다"' : '')
+          + '>' + (r.rating ? (r.estMmr ? '~' : '') + r.rating.toLocaleString() : '&mdash;') + '</div>'
+          + (r.standing ? '<div class="standing">전체 ' + r.standing.toLocaleString() + '위</div>'
+             : (r.estMmr ? '<div class="standing">순위 미집계</div>' : ''))
           + '</td>'
         + '<td class="col-wl"><div class="wl"><span class="t">' + r.wins + '승 ' + r.losses + '패'
           + (r._games ? '  ' + wr + '%' : '') + '</span>'
@@ -448,6 +460,9 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
         + (open[r._key] ? detailRow(r) : '');
     }).join("");
   }
+
+  // 리플레이 파일 주소의 앞부분. 갱신기는 뒷부분만 넣어 페이지 용량을 아낀다.
+  var RP = "https://storage.googleapis.com/starcraft-user-uploads-prod/S1-replays/";
 
   // cwal.gg 의 그 계정 페이지 주소
   function cwalUrl(r){
@@ -473,11 +488,18 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     var rec = r.recent || [];
     var right = rec.length ? rec.map(function(m){
       var d = m.d || 0;
+      // 리플레이가 있으면 내려받기 버튼, 없으면 자리만 비워 줄이 어긋나지 않게 한다
+      var rp = m.rp
+        ? '<a class="rp" href="' + esc(m.rp.indexOf("http") === 0 ? m.rp : RP + m.rp) + '"'
+          + ' download target="_blank" rel="noopener"'
+          + ' title="리플레이 내려받기">&#8595;</a>'
+        : '<span class="rp off"></span>';
       return '<div class="g">'
            + '<span class="r' + (m.w ? '' : ' l') + '">' + (m.w ? 'W' : 'L') + '</span>'
            + '<span class="vs">' + esc(m.m || '') + '</span>'
            + '<span class="op">' + esc(m.o || '') + '</span>'
            + '<span class="d' + (d < 0 ? ' m' : '') + '">' + (d > 0 ? '+' : '') + d + '</span>'
+           + rp
            + '</div>';
     }).join("") : '<div class="none">cwal.gg 에 아직 경기 기록이 없습니다.</div>';
 
