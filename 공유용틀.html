@@ -203,10 +203,11 @@ tr.det:hover td{background:var(--panel-2)}
 }
 .g .d.m{color:var(--bad)}
 .g .rp{
-  flex:none;width:19px;height:19px;border-radius:3px;
+  flex:none;height:19px;padding:0 7px;border-radius:3px;
   border:1px solid var(--line);color:var(--ink-3);text-decoration:none;
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:11px;line-height:1;
+  font-family:"Chakra Petch",sans-serif;font-weight:600;
+  font-size:10px;line-height:1;letter-spacing:.08em;text-transform:uppercase;
 }
 .g .rp:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .g .rp.off{visibility:hidden}
@@ -287,6 +288,8 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
   tr.det td{padding:12px 10px}
   .det-in{gap:14px}
   .g,.mu{font-size:11px}
+  .g{gap:6px}
+  .g .rp{padding:0 5px;font-size:9px;letter-spacing:.04em}
 }
 </style>
 
@@ -492,8 +495,8 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
       var rp = m.rp
         ? '<a class="rp" href="' + esc(m.rp.indexOf("http") === 0 ? m.rp : RP + m.rp) + '"'
           + ' download target="_blank" rel="noopener"'
-          + ' title="리플레이 내려받기">&#8595;</a>'
-        : '<span class="rp off"></span>';
+          + ' title="리플레이 내려받기">download</a>'
+        : '<span class="rp off">download</span>';
       return '<div class="g">'
            + '<span class="r' + (m.w ? '' : ' l') + '">' + (m.w ? 'W' : 'L') + '</span>'
            + '<span class="vs">' + esc(m.m || '') + '</span>'
