@@ -1842,7 +1842,7 @@
   "tag": "IllIlIIlllIl",
   "code": "IllIlIIlllIl#3332",
   "old": "",
-  "ladderId": ""
+  "ladderId": "Crown[kS]"
  },
  {
   "id": "Sushi",
@@ -2617,5 +2617,14 @@
   "code": "고범준#3314",
   "old": "",
   "ladderId": ""
+ },
+ {
+  "id": "Every1[kS]",
+  "tier": "Gold",
+  "race": "",
+  "tag": "",
+  "code": "",
+  "old": "",
+  "ladderId": "horang2"
  }
 ]

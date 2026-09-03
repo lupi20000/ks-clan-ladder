@@ -16,6 +16,9 @@
   --accent-soft:rgba(47,107,181,.10);
   --good:#2f8f5b;
   --bad:#c0503f;
+  --warn:#c0392b;                      /* 등록요청 줄 강조색 */
+  --warn-soft:rgba(192,57,43,.06);
+  --warn-line:rgba(192,57,43,.30);
   --t-Black:#565d6e;  --t-Gold:#b2862a;   --t-Yellow:#9a8c1f;
   --t-Red:#c0503f;    --t-Violet:#7a5cc4; --t-Blue:#3a78c8;
   --t-Sky:#2b93ab;    --t-White:#7b8496;  --t-none:#8b93a4;
@@ -36,6 +39,9 @@
     --accent-soft:rgba(111,164,232,.13);
     --good:#5cbf8a;
     --bad:#e07a68;
+    --warn:#ef8069;
+    --warn-soft:rgba(239,128,105,.09);
+    --warn-line:rgba(239,128,105,.32);
     --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
     --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
     --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
@@ -56,6 +62,9 @@
   --accent-soft:rgba(111,164,232,.13);
   --good:#5cbf8a;
   --bad:#e07a68;
+  --warn:#ef8069;
+  --warn-soft:rgba(239,128,105,.09);
+  --warn-line:rgba(239,128,105,.32);
   --t-Black:#98a0b2;  --t-Gold:#e0b155;   --t-Yellow:#d9cc63;
   --t-Red:#e58573;    --t-Violet:#a98ee6; --t-Blue:#6fa4e8;
   --t-Sky:#5ec4dc;    --t-White:#c4cbd8;  --t-none:#8b93a4;
@@ -192,21 +201,28 @@ tr.det:hover td{background:var(--panel-2)}
   color:var(--good);flex:none;
 }
 .g .d.m{color:var(--bad)}
-.none{font-size:12px;color:var(--ink-3)}
+.none{font-size:12px;color:var(--ink-3);line-height:1.7}
+.none a{color:var(--accent);text-decoration:underline}
 
 /* ── 아이디 등록요청 (한 줄로 접어두고, 누르면 펼쳐진다) ── */
 .add{
-  background:var(--panel);border:1px solid var(--line-soft);border-radius:4px;
+  background:var(--warn-soft);border:1px solid var(--warn-line);
+  border-left:3px solid var(--warn);border-radius:4px;
   padding:9px 14px;box-shadow:var(--shadow);
 }
 .add > summary{
-  cursor:pointer;font-size:12px;color:var(--ink-3);
-  display:flex;align-items:center;gap:6px;list-style:none;
+  cursor:pointer;font-size:12.5px;color:var(--ink-2);
+  display:flex;align-items:center;gap:7px;list-style:none;
 }
 .add > summary::-webkit-details-marker{display:none}
-.add > summary::before{content:"+";font-size:12px;line-height:1}
+.add > summary::before{
+  content:"+";flex:none;width:15px;height:15px;border-radius:50%;
+  background:var(--warn);color:#fff;font-size:11px;font-weight:700;line-height:15px;
+  text-align:center;
+}
 .add[open] > summary::before{content:"−"}
-.add > summary:hover{color:var(--accent)}
+.add > summary b{color:var(--warn);font-weight:600}
+.add > summary:hover b{text-decoration:underline}
 .addbody{display:flex;flex-direction:column;gap:12px;padding-top:12px}
 .addrow{display:flex;flex-wrap:wrap;gap:8px}
 .addrow input{flex:1 1 180px;min-width:0}
@@ -274,7 +290,7 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
   </header>
 
   <details class="add">
-    <summary>순위에 안 보이는 클랜원이 있나요? 래더 아이디 등록요청</summary>
+    <summary>순위에 안 보이는 클랜원이 있나요? <b>래더 아이디 등록요청</b></summary>
     <div class="addbody">
       <p class="hint">클랜 아이디 · 래더 계정 이름 · 클랜티어를 적고 <b>등록요청</b> 을 누르세요.
         계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
@@ -433,6 +449,11 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     }).join("");
   }
 
+  // cwal.gg 의 그 계정 페이지 주소
+  function cwalUrl(r){
+    return "https://cwal.gg/player/" + (r.gateway || 30) + "/" + encodeURIComponent(r.toon);
+  }
+
   // 계정을 누르면 펼쳐지는 칸 — 종족별 전적과 최근 10전
   function detailRow(r){
     var mu = r.mu || {}, keys = Object.keys(mu).sort();
@@ -445,7 +466,9 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
            + '<span class="track"><span class="fill' + (pc < 50 ? ' lo' : '') + '" style="width:' + pc + '%"></span></span>'
            + '<span class="n">' + w + '-' + l + ' &middot; ' + pc + '%</span>'
            + '</div>';
-    }).join("") : '<div class="none">기록이 없습니다.</div>';
+    }).join("") : ('<div class="none">cwal.gg 에 아직 상세 기록이 없는 계정입니다.<br>'
+        + '<a href="' + cwalUrl(r) + '" target="_blank" rel="noopener">cwal.gg 에서 열어보기</a>'
+        + ' 를 한 번 누르면 다음 갱신부터 보일 수 있습니다.</div>');
 
     var rec = r.recent || [];
     var right = rec.length ? rec.map(function(m){
@@ -456,7 +479,7 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
            + '<span class="op">' + esc(m.o || '') + '</span>'
            + '<span class="d' + (d < 0 ? ' m' : '') + '">' + (d > 0 ? '+' : '') + d + '</span>'
            + '</div>';
-    }).join("") : '<div class="none">최근 경기 기록이 없습니다.</div>';
+    }).join("") : '<div class="none">cwal.gg 에 아직 경기 기록이 없습니다.</div>';
 
     var won = rec.filter(function(m){ return m.w; }).length;
     return '<tr class="det"><td colspan="6"><div class="det-in">'

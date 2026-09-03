@@ -155,13 +155,13 @@ def detail(gw, toon, n=10):
     t = urllib.parse.quote(toon, safe='')
     mu, recent = {}, []
 
-    d = fetch('%s/player/%d/%s' % (BASE, gw, t), tries=2)
+    d = fetch('%s/player/%d/%s' % (BASE, gw, t))
     if isinstance(d, dict):
         st = (d.get('profile') or {}).get('stats') or {}
         for k, v in (st.get('byMatchup') or {}).items():
             mu[k] = [v.get('wins') or 0, v.get('losses') or 0]
 
-    d = fetch('%s/player/%d/%s/matches' % (BASE, gw, t), tries=2)
+    d = fetch('%s/player/%d/%s/matches' % (BASE, gw, t))
     if isinstance(d, dict):
         for m in (d.get('matches') or [])[:n]:
             recent.append({
@@ -351,6 +351,27 @@ def main():
     for row, d in zip(rows, each(lambda x: detail(x['gateway'], x['toon']),
                                  rows, '개', 25)):
         row['mu'], row['recent'] = d if d else ({}, [])
+
+    # cwal 이 한꺼번에 많이 물어보면 종종 빈손으로 답한다.
+    # 그러면 계정을 눌러도 종족별 전적이 안 보이므로, 빈 것만 골라 다시 묻는다.
+    for turn in (1, 2):
+        again = [r for r in rows if not r['mu'] or not r['recent']]
+        if not again:
+            break
+        print('  전적이 비어 온 %d개 다시 물어보는 중 (%d번째)' % (len(again), turn))
+        time.sleep(3)
+        for row, d in zip(again, each(lambda x: detail(x['gateway'], x['toon']),
+                                      again, '개', 25)):
+            if not d:
+                continue
+            mu, recent = d
+            if mu:
+                row['mu'] = mu
+            if recent:
+                row['recent'] = recent
+    left = len([r for r in rows if not r['mu']])
+    if left:
+        print('  (%d개는 끝내 전적을 못 받았습니다)' % left)
 
     rows.sort(key=lambda x: -x['rating'])
     data = {
