@@ -53,6 +53,9 @@ ROSTER, OUT = '명단.json', 'data.js'
 REQ_CSV = ('https://docs.google.com/spreadsheets/d/'
            '1IsIFpcGqrZ56pWUxMBfWuTHEtZAwr5bWhcbjHSWn9kU/gviz/tq?tqx=out:csv'
            '&sheet=%EC%84%A4%EB%AC%B8%EC%A7%80%20%EC%9D%91%EB%8B%B5%20%EC%8B%9C%ED%8A%B81')
+# 관리자 모드(admin.html)에서 넣은 "계정 추가 / 빼기" 가 쌓이는 곳.
+# 클라우드플레어 중계소가 보관하고 있고, 여기서는 읽기만 한다.
+ADMIN_OPS = 'https://ks-replay.lupi20000.workers.dev/admin/ops'
 TPL = '공유용틀.html'          # 순위표 화면의 원본 틀
 LOCAL = 'index.html'           # 내 컴퓨터에서 보는 판 (data.js 를 옆에서 읽음)
 SHARE = '공유용.html'          # 파일 하나로 다 들어있는 판 (보내거나 웹에 올릴 때)
@@ -64,6 +67,10 @@ PUB = os.environ.get('KS_PUB') or '공개/index.html'
 # 공개용에서 빼는 항목 — 클랜 내부에서만 볼 것들
 DROP_TOP = ('missing', 'errors', 'total', 'ladderSize')
 DROP_ROW = ('auroraId', 'how', 'sure', 'alts', 'id', 'race')
+
+# 관리자 화면이 "지금 순위에 있는 계정" 을 보여줄 때 읽는 파일.
+# 공개 페이지와 같은 폴더에 둔다.
+ACC = os.path.join(os.path.dirname(PUB), '계정.json')
 
 
 def page(tpl, inner):
@@ -276,6 +283,41 @@ def inbox():
     return out
 
 
+def admin():
+    """관리자 모드에서 넣어둔 '계정 추가 / 빼기' 를 읽어온다.
+
+    돌려주는 것은 세 가지다.
+      adds  : 명단에 합칠 줄들 (등록요청과 같은 모양)
+      force : [kS] 태그가 없어도 순위에 올릴 계정 이름들
+      drop  : 순위에서 뺄 계정 이름들
+    중계소를 못 읽어도 갱신은 그대로 진행한다.
+    """
+    try:
+        req = urllib.request.Request(ADMIN_OPS, headers={'User-Agent': UA['User-Agent']})
+        got = json.loads(urllib.request.urlopen(req, timeout=20).read().decode('utf-8'))
+        ops = got.get('ops') or []
+    except Exception as e:
+        print('관리자 변경목록을 못 읽었습니다 (%s) — 이번엔 건너뜁니다' % e)
+        return [], set(), set()
+
+    adds, force, drop = [], set(), set()
+    for o in ops:
+        toon = (o.get('toon') or '').strip()
+        if not toon:
+            continue
+        if o.get('act') == 'del':
+            drop.add(toon.lower())
+        else:
+            force.add(toon.lower())
+            adds.append({'id': (o.get('id') or '').strip() or toon.split('[')[0],
+                         'ladderId': toon,
+                         'tier': (o.get('tier') or '').strip()})
+    if adds or drop:
+        print('관리자 변경 %d건 — 추가 %d개, 빼기 %d개'
+              % (len(ops), len(adds), len(drop)))
+    return adds, force, drop
+
+
 def merge(roster, reqs):
     """등록요청을 명단에 합쳐 파일로 저장한다.
 
@@ -315,8 +357,9 @@ def main():
     t0 = time.time()
     roster = json.load(open(ROSTER, encoding='utf-8'))
 
-    # 홈페이지에서 들어온 등록요청부터 명단에 합친다
-    reqs = inbox()
+    # 홈페이지에서 들어온 등록요청 + 관리자 모드에서 넣은 것을 명단에 합친다
+    adds, force, drop = admin()
+    reqs = inbox() + adds
     if reqs:
         added, filled = merge(roster, reqs)
         print('등록요청 %d건 확인 — 새로 넣음 %d명, 래더아이디 채움 %d명'
@@ -398,9 +441,14 @@ def main():
         else:
             missing.append(r['id'])
 
-    # 6) 순위에 올릴 계정만 추린다 — [kS] 태그 + 클랜티어가 둘 다 있어야 한다
+    # 6) 순위에 올릴 계정만 추린다 — [kS] 태그 + 클랜티어가 둘 다 있어야 한다.
+    #    단 관리자 모드로 직접 넣은 계정은 태그가 없어도 통과시키고,
+    #    빼기로 표시한 계정은 조건에 맞아도 뺀다.
     found = len(rows)
-    rows = [r for r in rows if KS.search(r['toon']) and r['tier'] in TIERS]
+    rows = [r for r in rows
+            if (KS.search(r['toon']) or r['toon'].lower() in force)
+            and r['tier'] in TIERS
+            and r['toon'].lower() not in drop]
     cut = found - len(rows)
 
     # 7) 계정마다 종족별 전적과 최근 10전을 받아온다 (펼쳐보는 내용)
@@ -479,6 +527,13 @@ def main():
             f.write(page(tpl, '<script>window.KS_DATA = '
                     + json.dumps(pub, ensure_ascii=False, separators=(',', ':'))
                     + ';</script>'))
+
+        # 관리자 화면에서 '빼기' 를 누를 수 있게 지금 순위에 오른 계정만 따로 적어둔다
+        with open(ACC, 'w', encoding='utf-8') as f:
+            json.dump({'updated': data['updated'],
+                       'rows': [{'id': r['id'], 'toon': r['toon'], 'tier': r['tier']}
+                                for r in rows]},
+                      f, ensure_ascii=False, separators=(',', ':'))
     except FileNotFoundError:
         # 틀 파일이 없을 때만 넘어간다. 조용히 지나가면 안 되니 알려준다.
         print('!! %s 를 못 찾아 순위표 페이지를 못 만들었습니다' % TPL)
@@ -486,7 +541,7 @@ def main():
 
     print('=' * 56)
     print('순위에 오른 계정   : %d개' % len(rows))
-    print('  ([kS] 태그와 클랜티어가 둘 다 있는 계정만)')
+    print('  ([kS] 태그와 클랜티어가 둘 다 있는 계정 + 관리자가 직접 넣은 계정)')
     print('기준에 안 맞아 뺀 계정 : %d개' % cut)
     print('계정 못 찾은 클랜원 : %d명' % len(missing))
     print('통신오류           : %d명' % len(errors))
