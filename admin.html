@@ -104,6 +104,11 @@ button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
 }
 .badge.add{color:var(--good);background:var(--good-soft)}
 .badge.del{color:var(--bad);background:var(--bad-soft)}
+.check{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  margin:0 0 14px;font-size:12.5px;color:var(--ink-2);font-weight:400;
+}
+.check input{width:auto;flex:none;margin:0;accent-color:var(--accent)}
 .none{color:var(--ink-3);font-size:12.5px;padding:10px 2px}
 .hint{color:var(--ink-3);font-size:11.5px;margin-top:10px;line-height:1.7}
 .hide{display:none}
@@ -116,16 +121,27 @@ button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
   <div id="login" class="card">
     <h1>ks clan 관리자</h1>
     <p class="sub">순위에 올릴 계정을 넣고 뺍니다.</p>
-    <div style="margin-bottom:12px">
-      <label for="u">아이디</label>
-      <input id="u" autocomplete="username">
-    </div>
-    <div style="margin-bottom:14px">
-      <label for="p">비밀번호</label>
-      <input id="p" type="password" autocomplete="current-password">
-    </div>
-    <button id="go" style="width:100%">들어가기</button>
+    <!-- form 으로 감싸면 브라우저가 아이디·비번 저장을 알아서 물어봐 준다 -->
+    <form id="lf" autocomplete="on">
+      <div style="margin-bottom:12px">
+        <label for="u">아이디</label>
+        <input id="u" name="username" autocomplete="username">
+      </div>
+      <div style="margin-bottom:12px">
+        <label for="p">비밀번호</label>
+        <input id="p" name="password" type="password" autocomplete="current-password">
+      </div>
+      <label class="check" for="keep">
+        <input type="checkbox" id="keep" checked>
+        <span>로그인 상태 유지 <b>(30일)</b></span>
+      </label>
+      <button id="go" type="submit" style="width:100%">들어가기</button>
+    </form>
     <div id="m0" class="msg"></div>
+    <p class="hint">
+      켜 두면 이 기기·이 브라우저에서는 다음에 들어올 때 바로 열립니다.
+      남의 컴퓨터에서는 꺼 주세요.
+    </p>
   </div>
 
   <div id="main" class="hide">
@@ -188,8 +204,29 @@ button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
   // 아이디·비밀번호는 이 페이지에 들어있지 않다.
   // 중계소(클라우드플레어)에 따로 넣어 두고 거기서 맞는지 확인한다.
   var API = "https://ks-replay.lupi20000.workers.dev";
-  var token = sessionStorage.getItem("ks_admin") || "";
   var ops = [], roster = [];
+
+  // 출입증 보관함.
+  //   '로그인 상태 유지' 를 켜면  → 이 기기에 남는 곳(localStorage) 에 30일치
+  //   끄면                        → 창을 닫으면 사라지는 곳(sessionStorage) 에 12시간치
+  // 비밀번호 자체는 어디에도 저장하지 않는다. 저장하면 이 컴퓨터를 만지는
+  // 누구나 꺼내 볼 수 있기 때문이다. (비번 저장은 브라우저에게 맡긴다)
+  var 보관 = {
+    읽기: function(k){
+      try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ""; }
+      catch(e){ return ""; }
+    },
+    쓰기: function(k, v, 오래){
+      try {
+        (오래 ? localStorage : sessionStorage).setItem(k, v);
+        (오래 ? sessionStorage : localStorage).removeItem(k);
+      } catch(e){}
+    },
+    지우기: function(k){
+      try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch(e){}
+    }
+  };
+  var token = 보관.읽기("ks_admin");
 
   function $(id){ return document.getElementById(id); }
   function esc(s){
@@ -212,27 +249,39 @@ button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
   }
 
   // ── 로그인 ──
+  // 지난번에 켜 뒀는지 기억해서 체크칸을 미리 맞춰 둔다
+  try {
+    if (localStorage.getItem("ks_admin_keep") === "0") $("keep").checked = false;
+    var 지난아이디 = localStorage.getItem("ks_admin_id");
+    if (지난아이디) $("u").value = 지난아이디;
+  } catch(e){}
+
   function 들어가기(){
     var u = $("u").value.trim(), p = $("p").value;
+    var 유지 = $("keep").checked;
     if (!u || !p) return say($("m0"), "아이디와 비밀번호를 적어주세요.");
     $("go").disabled = true;
-    ask("/admin/login", { u:u, p:p }).then(function(res){
+    ask("/admin/login", { u:u, p:p, keep:유지 }).then(function(res){
       $("go").disabled = false;
       if (!res.ok) return say($("m0"), res.msg || "들어가지 못했습니다.");
       token = res.token;
-      sessionStorage.setItem("ks_admin", token);
+      보관.쓰기("ks_admin", token, 유지);
+      try {
+        localStorage.setItem("ks_admin_keep", 유지 ? "1" : "0");
+        if (유지) localStorage.setItem("ks_admin_id", u);
+        else localStorage.removeItem("ks_admin_id");
+      } catch(e){}
       열기();
     }).catch(function(){
       $("go").disabled = false;
       say($("m0"), "중계소에 연결하지 못했습니다.");
     });
   }
-  $("go").onclick = 들어가기;
-  $("p").onkeydown = function(e){ if (e.key === "Enter") 들어가기(); };
-  $("u").onkeydown = function(e){ if (e.key === "Enter") $("p").focus(); };
+  // 엔터를 쳐도, 버튼을 눌러도 같은 곳으로 온다
+  $("lf").onsubmit = function(e){ e.preventDefault(); 들어가기(); };
 
   $("out").onclick = function(){
-    sessionStorage.removeItem("ks_admin");
+    보관.지우기("ks_admin");
     location.reload();
   };
 
@@ -349,15 +398,12 @@ button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
   }
   $("q").oninput = 명단그리기;
 
-  // 조금 전에 로그인해 둔 상태면 바로 연다
+  // 전에 받아둔 출입증이 아직 살아 있으면 로그인 화면을 건너뛴다
   if (token){
-    ask("/admin/save", {}).then(function(res){
-      if (res && res.msg && res.msg.indexOf("로그인") >= 0){
-        sessionStorage.removeItem("ks_admin"); token = "";
-      } else {
-        열기();
-      }
-    });
+    ask("/admin/me").then(function(res){
+      if (res && res.ok) 열기();
+      else { 보관.지우기("ks_admin"); token = ""; }
+    }).catch(function(){});
   }
 })();
 </script>
