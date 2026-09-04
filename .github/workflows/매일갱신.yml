@@ -3,7 +3,7 @@
 # 하는 일
 #   1) 이 저장소를 깃허브 서버에 내려받는다
 #   2) 갱신.py 를 돌린다 (등록요청 시트 읽기 + cwal.gg 수집 + index.html 만들기)
-#   3) 바뀐 index.html · 명단.json · 계정.json 을 이 저장소에 되돌려 저장한다
+#   3) 바뀐 index.html · 명단.json · 계정.json · notfound.json 을 이 저장소에 되돌려 저장한다
 #      → 저장되는 순간 홈페이지에 반영된다
 #
 # 내 컴퓨터가 꺼져 있어도 깃허브가 대신 돌려준다.
@@ -41,7 +41,7 @@ jobs:
         run: |
           git config user.name  "ks-ladder-bot"
           git config user.email "ks-ladder-bot@users.noreply.github.com"
-          git add index.html 명단.json 계정.json
+          git add index.html 명단.json 계정.json notfound.json
           git diff --cached --quiet && echo "바뀐 게 없습니다" && exit 0
           git commit -m "순위 자동 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
           git push

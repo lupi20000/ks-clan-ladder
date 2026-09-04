@@ -34,7 +34,7 @@ ks clan 래더 순위 갱신기
 주의: 404(계정 없음)와 통신오류를 반드시 구분한다.
       오류를 '없음'으로 처리하면 멀쩡한 클랜원이 순위에서 통째로 빠진다.
 """
-import io, os, sys, re, csv, json, time, datetime
+import io, os, sys, re, csv, json, time, datetime, hashlib
 import concurrent.futures as cf
 import urllib.parse, urllib.request, urllib.error
 
@@ -71,6 +71,10 @@ DROP_ROW = ('auroraId', 'how', 'sure', 'alts', 'id', 'race')
 # 관리자 화면이 "지금 순위에 있는 계정" 을 보여줄 때 읽는 파일.
 # 공개 페이지와 같은 폴더에 둔다.
 ACC = os.path.join(os.path.dirname(PUB), '계정.json')
+
+# 등록요청이 들어왔는데 래더에서 계정을 못 찾은 목록.
+# 카페에 안내글을 올리는 봇이 이 파일만 읽어간다.
+NF = os.path.join(os.path.dirname(PUB), 'notfound.json')
 
 
 def page(tpl, inner):
@@ -280,6 +284,35 @@ def inbox():
         if not base:
             continue                           # 빈 줄이거나 '[kS]' 만 적은 장난 줄
         out.append({'id': cid or base, 'ladderId': toon, 'tier': tier})
+    return out
+
+
+def 안전글자(s, n=40):
+    """카페 안내글에 끼워 넣을 값을 안전하게 다듬는다.
+
+    등록요청 칸은 누구나 아무 글이나 적어 보낼 수 있는 곳이다.
+    줄바꿈이나 이상한 글자가 섞여 들어오면 안내글 모양이 망가지거나
+    엉뚱한 문장이 끼어들 수 있으니, 눈에 보이는 글자만 남기고 길이도 자른다.
+    """
+    s = ''.join(c for c in str(s or '') if c.isprintable())
+    return re.sub(r'\s+', ' ', s).strip()[:n]
+
+
+def 못찾은요청(reqs, rows):
+    """등록요청이 들어왔는데 순위에 못 올라간 것만 골라낸다."""
+    있는계정 = set((r.get('toon') or '').lower() for r in rows)
+    있는아이디 = set((r.get('id') or '').lower() for r in rows if r.get('id'))
+    out, 봤다 = [], set()
+    for q in reqs:
+        toon = (q.get('ladderId') or '').strip()
+        cid = (q.get('id') or '').strip()
+        if toon.lower() in 있는계정 or (cid and cid.lower() in 있는아이디):
+            continue                       # 순위에 잘 올라갔다
+        key = (cid.lower(), toon.lower())
+        if key in 봤다:
+            continue                       # 같은 요청이 두 번 들어온 경우
+        봤다.add(key)
+        out.append({'clanId': 안전글자(cid), 'ladderId': 안전글자(toon)})
     return out
 
 
@@ -540,6 +573,24 @@ def main():
                        'rows': [{'id': r['id'], 'toon': r['toon'], 'tier': r['tier']}
                                 for r in rows]},
                       f, ensure_ascii=False, separators=(',', ':'))
+
+        # 등록요청이 들어왔는데 계정을 못 찾은 것 — 카페 안내글 봇이 읽어간다.
+        # 봇은 이 파일의 글을 그대로 옮겨 붙이지 않고, 값만 꺼내 쓴다.
+        못찾음 = 못찾은요청(reqs, rows)
+        표식 = '|'.join(sorted('%s>%s' % (x['clanId'], x['ladderId'])
+                               for x in 못찾음))
+        with open(NF, 'w', encoding='utf-8') as f:
+            json.dump({'updated': data['updated'],
+                       'count': len(못찾음),
+                       # 어제와 같은 상태면 글을 또 올리지 않도록 비교용 값
+                       'sig': hashlib.sha1(표식.encode('utf-8')).hexdigest()[:12],
+                       'rows': 못찾음},
+                      f, ensure_ascii=False, separators=(',', ':'))
+        if 못찾음:
+            print('등록요청했는데 계정 못 찾음 : %d건' % len(못찾음))
+            for x in 못찾음:
+                print('   ? 클랜아이디 %s / 래더계정 %s'
+                      % (x['clanId'] or '(빈칸)', x['ladderId'] or '(빈칸)'))
     except FileNotFoundError:
         # 틀 파일이 없을 때만 넘어간다. 조용히 지나가면 안 되니 알려준다.
         print('!! %s 를 못 찾아 순위표 페이지를 못 만들었습니다' % TPL)
