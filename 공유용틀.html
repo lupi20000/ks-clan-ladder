@@ -86,6 +86,13 @@ body{
 
 /* ── 머리말 ── */
 .head{display:flex;flex-direction:column;gap:6px}
+.titlerow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.admin{                                /* 제목 오른쪽 끝의 작은 관리자모드 버튼 */
+  flex:none;font-size:11px;line-height:1.6;color:var(--ink-3);text-decoration:none;
+  border:1px solid var(--line);border-radius:999px;padding:3px 11px;
+  background:var(--panel);white-space:nowrap;
+}
+.admin:hover{color:var(--accent);border-color:var(--accent)}
 .eyebrow{
   font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:12px;
   letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
@@ -302,7 +309,10 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
 
   <header class="head">
     <div class="eyebrow">cwal.gg 래더 기준</div>
-    <h1>ks clan 래더 순위</h1>
+    <div class="titlerow">
+      <h1>ks clan 래더 순위</h1>
+      <a class="admin" href="https://lupi20000.github.io/ks-clan-ladder/admin.html">관리자모드</a>
+    </div>
     <p class="sub" id="m-updated"></p>
   </header>
 
@@ -310,7 +320,7 @@ footer{color:var(--ink-3);font-size:12px;text-align:center}
     <summary>순위에 안 보이는 클랜원이 있나요? <b>래더 아이디 등록요청</b></summary>
     <div class="addbody">
       <p class="hint">클랜 아이디 · 래더 계정 이름 · 클랜티어를 적고 <b>등록요청</b> 을 누르세요.
-        계정 이름에 <b>[kS]</b> 가 붙어 있어야 순위에 올라갑니다.
+        계정 이름은 스타에서 쓰는 그대로 (<b>대소문자·기호까지</b>) 적어야 찾습니다.
         <b>반영은 매일 자정</b>에 한 번 이뤄집니다.</p>
       <div class="addrow">
         <input id="a-id" placeholder="클랜 아이디" autocomplete="off">

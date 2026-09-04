@@ -367,6 +367,12 @@ def main():
         for t in added + filled:
             print('   + %s' % t)
 
+    # 등록요청·관리자로 직접 들어온 계정은 [kS] 태그가 없어도 순위에 올린다.
+    # (본인이 적어 보낸 계정이니 클랜원인 게 확인된 셈이다)
+    force |= set(q['ladderId'].strip().lower() for q in reqs if q.get('ladderId'))
+    force |= set(r['ladderId'].strip().lower() for r in roster
+                 if r.get('note') == '등록요청' and r.get('ladderId'))
+
     ladder = sweep()
     if not ladder:
         print('래더를 하나도 못 받았습니다. 인터넷 연결을 확인하세요.')
@@ -442,7 +448,7 @@ def main():
             missing.append(r['id'])
 
     # 6) 순위에 올릴 계정만 추린다 — [kS] 태그 + 클랜티어가 둘 다 있어야 한다.
-    #    단 관리자 모드로 직접 넣은 계정은 태그가 없어도 통과시키고,
+    #    단 등록요청·관리자 모드로 직접 들어온 계정은 태그가 없어도 통과시키고,
     #    빼기로 표시한 계정은 조건에 맞아도 뺀다.
     found = len(rows)
     rows = [r for r in rows
@@ -541,7 +547,7 @@ def main():
 
     print('=' * 56)
     print('순위에 오른 계정   : %d개' % len(rows))
-    print('  ([kS] 태그와 클랜티어가 둘 다 있는 계정 + 관리자가 직접 넣은 계정)')
+    print('  ([kS] 태그와 클랜티어가 둘 다 있는 계정 + 등록요청·관리자로 넣은 계정)')
     print('기준에 안 맞아 뺀 계정 : %d개' % cut)
     print('계정 못 찾은 클랜원 : %d명' % len(missing))
     print('통신오류           : %d명' % len(errors))
