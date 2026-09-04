@@ -298,22 +298,44 @@ def 안전글자(s, n=40):
     return re.sub(r'\s+', ' ', s).strip()[:n]
 
 
-def 못찾은요청(reqs, rows):
-    """등록요청이 들어왔는데 순위에 못 올라간 것만 골라낸다."""
-    있는계정 = set((r.get('toon') or '').lower() for r in rows)
-    있는아이디 = set((r.get('id') or '').lower() for r in rows if r.get('id'))
-    out, 봤다 = [], set()
+def 요청분류(reqs, rows):
+    """등록요청을 '순위에 올라간 것' 과 '못 올라간 것' 으로 나눈다.
+
+    카페 안내글 봇이 이걸 읽어서, 올라간 사람에게는 "반영됐습니다",
+    못 올라간 사람에게는 "다시 적어주세요" 를 알린다.
+    """
+    있는계정, 있는아이디 = {}, {}
+    for 자리, r in enumerate(rows, 1):
+        t = (r.get('toon') or '').lower()
+        i = (r.get('id') or '').lower()
+        if t:
+            있는계정.setdefault(t, (자리, r))
+        if i:
+            있는아이디.setdefault(i, (자리, r))
+
+    성공, 실패, 봤다 = [], [], set()
     for q in reqs:
         toon = (q.get('ladderId') or '').strip()
         cid = (q.get('id') or '').strip()
-        if toon.lower() in 있는계정 or (cid and cid.lower() in 있는아이디):
-            continue                       # 순위에 잘 올라갔다
         key = (cid.lower(), toon.lower())
         if key in 봤다:
             continue                       # 같은 요청이 두 번 들어온 경우
         봤다.add(key)
-        out.append({'clanId': 안전글자(cid), 'ladderId': 안전글자(toon)})
-    return out
+
+        찾음 = 있는계정.get(toon.lower())
+        if not 찾음 and cid:
+            찾음 = 있는아이디.get(cid.lower())
+
+        항목 = {'clanId': 안전글자(cid), 'ladderId': 안전글자(toon)}
+        if 찾음:
+            자리, r = 찾음
+            항목['rank'] = 자리                                  # 순위표에서 몇 번째인지
+            항목['toon'] = 안전글자(r.get('toon'))               # 실제로 붙은 계정
+            항목['rating'] = int(r.get('rating') or 0)
+            성공.append(항목)
+        else:
+            실패.append(항목)
+    return 성공, 실패
 
 
 def admin():
@@ -574,9 +596,9 @@ def main():
                                 for r in rows]},
                       f, ensure_ascii=False, separators=(',', ':'))
 
-        # 등록요청이 들어왔는데 계정을 못 찾은 것 — 카페 안내글 봇이 읽어간다.
+        # 등록요청 처리 결과 — 카페 안내글 봇이 읽어간다.
         # 봇은 이 파일의 글을 그대로 옮겨 붙이지 않고, 값만 꺼내 쓴다.
-        못찾음 = 못찾은요청(reqs, rows)
+        잘됨, 못찾음 = 요청분류(reqs, rows)
         표식 = '|'.join(sorted('%s>%s' % (x['clanId'], x['ladderId'])
                                for x in 못찾음))
         with open(NF, 'w', encoding='utf-8') as f:
@@ -584,13 +606,13 @@ def main():
                        'count': len(못찾음),
                        # 어제와 같은 상태면 글을 또 올리지 않도록 비교용 값
                        'sig': hashlib.sha1(표식.encode('utf-8')).hexdigest()[:12],
-                       'rows': 못찾음},
+                       'rows': 못찾음,
+                       'ok': 잘됨},
                       f, ensure_ascii=False, separators=(',', ':'))
-        if 못찾음:
-            print('등록요청했는데 계정 못 찾음 : %d건' % len(못찾음))
-            for x in 못찾음:
-                print('   ? 클랜아이디 %s / 래더계정 %s'
-                      % (x['clanId'] or '(빈칸)', x['ladderId'] or '(빈칸)'))
+        print('등록요청 : 반영됨 %d건 / 못 찾음 %d건' % (len(잘됨), len(못찾음)))
+        for x in 못찾음:
+            print('   ? 클랜아이디 %s / 래더계정 %s'
+                  % (x['clanId'] or '(빈칸)', x['ladderId'] or '(빈칸)'))
     except FileNotFoundError:
         # 틀 파일이 없을 때만 넘어간다. 조용히 지나가면 안 되니 알려준다.
         print('!! %s 를 못 찾아 순위표 페이지를 못 만들었습니다' % TPL)
