@@ -51,4 +51,13 @@ jobs:
           git add index.html 명단.json 계정.json notfound.json
           git diff --cached --quiet && echo "바뀐 게 없습니다" && exit 0
           git commit -m "순위 자동 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+
+          # 순위 모으는 데 10분 넘게 걸린다. 그 사이에 다른 변경이 올라와 있으면
+          # 그냥 올리기가 거부되고, 애써 모은 결과가 통째로 날아간다.
+          # 그래서 거부당하면 남의 것을 먼저 받아 놓고 다시 올린다. (세 번까지)
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "그 사이 누가 먼저 올렸습니다. 받아서 다시 시도합니다 ($i/3)"
+            git pull --rebase origin main
+          done
           git push
